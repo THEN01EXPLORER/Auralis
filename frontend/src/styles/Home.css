@@ -1,0 +1,39 @@
+.home {
+  min-height: 100vh;
+  background: #282c34;
+}
+
+.home-header {
+  text-align: center;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+  border-bottom: 2px solid #61dafb;
+}
+
+.home-header h1 {
+  font-size: 3rem;
+  margin: 0;
+  color: #61dafb;
+  text-shadow: 0 0 20px rgba(97, 218, 251, 0.5);
+}
+
+.home-header p {
+  font-size: 1.2rem;
+  color: #b0b0b0;
+  margin: 10px 0 0 0;
+}
+
+.home-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .home-content {
+    grid-template-columns: 1fr;
+  }
+}
