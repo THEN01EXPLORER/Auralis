@@ -1,8 +1,9 @@
 .code-editor {
-  background: #1e1e1e;
-  border-radius: 8px;
-  padding: 20px;
+  background: linear-gradient(135deg, #1e1e1e 0%, #252525 100%);
+  border-radius: 12px;
+  padding: 25px;
   margin: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
 .editor-header {
@@ -15,38 +16,82 @@
 .editor-header h3 {
   color: #61dafb;
   margin: 0;
+  font-size: 24px;
+}
+
+.editor-info {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+}
+
+.editor-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .analyze-btn {
-  background: #61dafb;
+  background: linear-gradient(135deg, #61dafb 0%, #4fa8c5 100%);
   color: #282c34;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 12px 30px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  transition: background 0.3s;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.3);
 }
 
 .analyze-btn:hover {
-  background: #4fa8c5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(97, 218, 251, 0.4);
+}
+
+.analyze-btn:active {
+  transform: translateY(0);
+}
+
+.analyze-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .code-textarea {
   width: 100%;
-  min-height: 400px;
-  background: #2d2d2d;
+  min-height: 450px;
+  background: #1a1a1a;
   color: #d4d4d4;
-  border: 1px solid #3e3e3e;
-  border-radius: 5px;
-  padding: 15px;
-  font-family: 'Courier New', monospace;
+  border: 2px solid #3e3e3e;
+  border-radius: 8px;
+  padding: 20px;
+  font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.8;
   resize: vertical;
+  transition: border-color 0.3s ease;
 }
 
 .code-textarea:focus {
   outline: none;
   border-color: #61dafb;
+  box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.1);
+}
+
+.line-numbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 20px 10px;
+  background: #252525;
+  color: #666;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.8;
+  user-select: none;
+  border-right: 1px solid #3e3e3e;
 }

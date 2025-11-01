@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from models import ContractRequest
+from bedrock_service import analyze_contract
 
 app = FastAPI()
 
@@ -18,14 +19,8 @@ def health():
 
 @app.post("/audit")
 def audit(request: ContractRequest):
-    return {
-        "risk_score": 85,
-        "vulnerabilities": [
-            {
-                "type": "Re-entrancy",
-                "line_number": 22,
-                "severity": "High",
-                "description": "A mock re-entrancy vulnerability was detected."
-            }
-        ]
-    }
+    try:
+        analysis = analyze_contract(request.code)
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error analyzing contract: {str(e)}")
