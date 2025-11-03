@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Auralis Smart Contract Security Auditor Backend
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  AuralisFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: lambda_function.handler
+      Runtime: python3.11
+      Architectures:
+        - x86_64
+      Events:
+        ApiRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+        ApiProxy:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Environment:
+        Variables:
+          USE_BEDROCK: false
+
+Outputs:
+  AuralisApi:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  AuralisFunction:
+    Description: "Auralis Lambda Function ARN"
+    Value: !GetAtt AuralisFunction.Arn
