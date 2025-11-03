@@ -15,7 +15,8 @@ class VulnerabilityAnalyzer:
                     severity="Critical",
                     line=i,
                     description="External call detected before state changes",
-                    recommendation="Use Checks-Effects-Interactions pattern or ReentrancyGuard"
+                    recommendation="Use Checks-Effects-Interactions pattern or ReentrancyGuard",
+                    confidence=0.95
                 ))
             
             # Integer overflow detection
@@ -25,7 +26,8 @@ class VulnerabilityAnalyzer:
                     severity="High",
                     line=i,
                     description="Unchecked arithmetic operation detected",
-                    recommendation="Use SafeMath library or Solidity 0.8+ built-in checks"
+                    recommendation="Use SafeMath library or Solidity 0.8+ built-in checks",
+                    confidence=0.80
                 ))
             
             # Access control detection
@@ -35,7 +37,8 @@ class VulnerabilityAnalyzer:
                     severity="Medium",
                     line=i,
                     description="Public function without access control modifier",
-                    recommendation="Add appropriate access control modifiers (onlyOwner, onlyAdmin)"
+                    recommendation="Add appropriate access control modifiers (onlyOwner, onlyAdmin)",
+                    confidence=0.75
                 ))
             
             # Unchecked return values
@@ -45,7 +48,30 @@ class VulnerabilityAnalyzer:
                     severity="Medium",
                     line=i,
                     description="Low-level call without checking return value",
-                    recommendation="Check return value or use transfer() with require()"
+                    recommendation="Check return value or use transfer() with require()",
+                    confidence=0.85
+                ))
+            
+            # Timestamp dependence
+            if 'block.timestamp' in line or 'now' in line:
+                vulnerabilities.append(Vulnerability(
+                    type="Timestamp Dependence",
+                    severity="Medium",
+                    line=i,
+                    description="Contract relies on block.timestamp which can be manipulated",
+                    recommendation="Avoid using timestamps for critical logic",
+                    confidence=0.90
+                ))
+            
+            # Delegatecall injection
+            if 'delegatecall' in line:
+                vulnerabilities.append(Vulnerability(
+                    type="Delegatecall Injection",
+                    severity="Critical",
+                    line=i,
+                    description="Unsafe delegatecall detected - can lead to complete contract takeover",
+                    recommendation="Validate delegatecall targets and use library pattern",
+                    confidence=0.92
                 ))
         
         return vulnerabilities

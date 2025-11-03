@@ -1,9 +1,33 @@
-import boto3
 import json
 
-bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+try:
+    import boto3
+    bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
+    HAS_AWS = True
+except:
+    HAS_AWS = False
 
 def analyze_contract(code: str) -> dict:
+    if not HAS_AWS:
+        # Return mock data when AWS is not configured
+        return {
+            "risk_score": 85,
+            "vulnerabilities": [
+                {
+                    "type": "Re-entrancy Attack",
+                    "line_number": 14,
+                    "severity": "High",
+                    "description": "External call detected before state changes. This is a mock response."
+                },
+                {
+                    "type": "Access Control Violation",
+                    "line_number": 8,
+                    "severity": "Medium",
+                    "description": "Public function without access control. This is a mock response."
+                }
+            ]
+        }
+    
     system_prompt = """You are an expert smart contract security auditor. Analyze the provided Solidity code and identify all security vulnerabilities.
 
 You MUST return your analysis ONLY in this exact JSON format with no additional text:

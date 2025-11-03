@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import '../styles/CodeEditor.css';
 
-function CodeEditor({ onAnalyze }) {
+function CodeEditor({ onAnalyze, highlightLine }) {
   const [code, setCode] = useState(`// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -19,6 +19,26 @@ contract VulnerableBank {
     }
 }`);
 
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (highlightLine && textareaRef.current) {
+      const lines = code.split('\n');
+      let charCount = 0;
+      
+      for (let i = 0; i < highlightLine - 1; i++) {
+        charCount += lines[i].length + 1;
+      }
+      
+      const lineStart = charCount;
+      const lineEnd = charCount + (lines[highlightLine - 1]?.length || 0);
+      
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(lineStart, lineEnd);
+      textareaRef.current.scrollTop = (highlightLine - 5) * 20;
+    }
+  }, [highlightLine, code]);
+
   const handleAnalyze = () => {
     onAnalyze(code);
   };
@@ -26,12 +46,13 @@ contract VulnerableBank {
   return (
     <div className="code-editor">
       <div className="editor-header">
-        <h3>Smart Contract Code</h3>
+        <h3>📝 Smart Contract Code</h3>
         <button onClick={handleAnalyze} className="analyze-btn">
-          Analyze Contract
+          🔍 Analyze Contract
         </button>
       </div>
       <textarea
+        ref={textareaRef}
         value={code}
         onChange={(e) => setCode(e.target.value)}
         className="code-textarea"

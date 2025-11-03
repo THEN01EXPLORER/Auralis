@@ -11,6 +11,7 @@ class Vulnerability(BaseModel):
     line: int
     description: str
     recommendation: str
+    confidence: float = 0.85
 
 class AnalyzeResponse(BaseModel):
     analysis_id: str

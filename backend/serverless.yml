@@ -1,0 +1,35 @@
+service: auralis-backend
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: us-east-1
+  stage: prod
+  environment:
+    USE_BEDROCK: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - bedrock:InvokeModel
+      Resource: "*"
+
+functions:
+  api:
+    handler: lambda_handler.handler
+    timeout: 30
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+      - http:
+          path: /
+          method: ANY
+          cors: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true

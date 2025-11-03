@@ -20,14 +20,15 @@
 - [x] Integrate frontend with backend
 - [x] Test full application flow
 
-### Day 2 - AI Integration & Enhancement ✅ IN PROGRESS
-- [x] AWS Bedrock integration with Claude 3 Sonnet
-- [x] Advanced prompt engineering for vulnerability detection
-- [x] Risk scoring system with visual meter
-- [x] Enhanced UI with professional styling
-- [x] Confidence scoring for detections
-- [x] Expandable vulnerability details
-- [x] Lambda deployment configuration
+### Day 2 - AI Integration & Enhancement 🔄 READY TO START
+- [x] AWS Bedrock integration with Claude 3 Sonnet (code ready)
+- [ ] Test AWS Bedrock with real credentials
+- [ ] Advanced prompt engineering refinement
+- [ ] Risk scoring system with visual meter
+- [ ] Enhanced UI with professional styling
+- [ ] Confidence scoring for detections
+- [ ] Expandable vulnerability details
+- [ ] Lambda deployment configuration
 - [ ] Deploy to AWS Lambda
 - [ ] Test production deployment
 
@@ -79,17 +80,23 @@
 
 ---
 
-## Next Steps
-1. 
-2. 
-3. 
+## Next Steps (Day 2)
+1. Configure AWS credentials for Bedrock
+2. Test Claude 3 Sonnet integration live
+3. Add syntax highlighting to code editor
+4. Implement line highlighting for vulnerabilities
+5. Add confidence scores to detections
+6. Capture 5+ more screenshots
+7. Create screen recording of demo 
 
 ---
 
 ## Notes & Ideas
-- 
-- 
-- 
+- Pattern-based detection is working well, AI will enhance accuracy
+- Consider adding code fix suggestions in Day 2
+- Need to add more test contracts for demo
+- Mobile responsive design should be priority in Week 2
+- Consider adding export report feature (PDF/JSON) 
 
 ---
 
