@@ -32,17 +32,33 @@
 - [ ] Deploy to AWS Lambda
 - [ ] Test production deployment
 
-### Day 3 - Integration & Testing
-- [ ] Connect frontend to backend
-- [ ] Test vulnerability detection
-- [ ] Bug fixes and optimization
-- [ ] Documentation
+### Day 3 - Integration & Testing ✅ COMPLETED
+- [x] Connect frontend to backend
+- [x] Test vulnerability detection
+- [x] Dynamic risk scoring
+- [x] Line highlighting
+- [x] Remediation with code examples
+- [x] Bug fixes and optimization
+- [x] Documentation
 
-### Day 4 - Final Polish
+### Day 4 - AWS Deployment 🚀 IN PROGRESS
+- [x] Fix confidence score formatting bug
+- [x] Add AWS Lambda deployment configuration
+- [x] Add Mangum adapter for Lambda
+- [x] Create SAM template.yaml
+- [x] Configure environment variables
+- [ ] Deploy backend to AWS Lambda
+- [ ] Deploy frontend to AWS Amplify
+- [ ] Test live production URLs
+- [ ] Update documentation with live links
+
+### Day 5 - Final Polish
 - [ ] UI/UX improvements
 - [ ] Demo preparation
 - [ ] Presentation materials
 - [ ] Final testing
+- [ ] Video recording
+- [ ] Submission
 
 ---
 
