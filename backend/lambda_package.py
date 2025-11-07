@@ -31,8 +31,8 @@ def create_lambda_package():
                 arcname = os.path.relpath(file_path, deploy_dir)
                 zipf.write(file_path, arcname)
     
-    print(f"\n✅ Deployment package created: {zip_path}")
-    print(f"📦 Size: {os.path.getsize(zip_path) / (1024*1024):.2f} MB")
+    print(f"\nDeployment package created: {zip_path}")
+    print(f"Size: {os.path.getsize(zip_path) / (1024*1024):.2f} MB")
     print("\nNext steps:")
     print("1. Go to AWS Lambda Console: https://console.aws.amazon.com/lambda/")
     print("2. Create new function (Python 3.11)")
