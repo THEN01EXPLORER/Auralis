@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.contract import AnalyzeRequest, AnalyzeResponse
 from app.services.analyzer import VulnerabilityAnalyzer
+from mangum import Mangum
 import uuid
 
 app = FastAPI(title="Auralis API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Allow all origins for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,3 +36,6 @@ def analyze_contract(request: AnalyzeRequest):
         risk_score=risk_score,
         summary=f"Found {len(vulnerabilities)} vulnerabilities with risk score {risk_score}/100"
     )
+
+# Lambda handler
+handler = Mangum(app)

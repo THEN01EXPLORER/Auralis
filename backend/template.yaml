@@ -12,10 +12,12 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: .
-      Handler: lambda_function.handler
+      Handler: app.main.handler
       Runtime: python3.11
       Architectures:
         - x86_64
+      Timeout: 60
+      MemorySize: 1024
       Events:
         ApiRoot:
           Type: Api
@@ -29,7 +31,13 @@ Resources:
             Method: ANY
       Environment:
         Variables:
-          USE_BEDROCK: false
+          USE_BEDROCK: "false"
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+            Resource: "*"
 
 Outputs:
   AuralisApi:
