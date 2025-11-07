@@ -7,15 +7,17 @@ import '../styles/Home.css';
 function Home() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [highlightLine, setHighlightLine] = useState(null);
 
   const handleAnalyze = async (code) => {
     setLoading(true);
+    setError(null);
     try {
       const result = await analyzeContract(code);
       setReport(result);
     } catch (error) {
-      alert('Error analyzing contract. Make sure backend is running.');
+      setError(error.message || 'Failed to analyze contract. Please check if the backend is running.');
     } finally {
       setLoading(false);
     }
@@ -33,7 +35,7 @@ function Home() {
       </header>
       <div className="home-content">
         <CodeEditor onAnalyze={handleAnalyze} highlightLine={highlightLine} />
-        <VulnerabilityReport report={report} loading={loading} onLineClick={handleLineClick} />
+        <VulnerabilityReport report={report} loading={loading} error={error} onLineClick={handleLineClick} />
       </div>
     </div>
   );

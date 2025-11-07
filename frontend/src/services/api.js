@@ -11,7 +11,13 @@ export const analyzeContract = async (contractCode, chainType = 'ethereum') => {
     return response.data;
   } catch (error) {
     console.error('Error analyzing contract:', error);
-    throw error;
+    if (error.response) {
+      throw new Error(`Server error: ${error.response.data.detail || error.response.statusText}`);
+    } else if (error.request) {
+      throw new Error('Cannot connect to backend. Please ensure the server is running.');
+    } else {
+      throw new Error('Failed to analyze contract. Please try again.');
+    }
   }
 };
 
