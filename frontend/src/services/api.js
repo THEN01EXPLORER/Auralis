@@ -1,10 +1,13 @@
 import axios from 'axios';
 
+// DEPLOYMENT: Replace this URL with your API Gateway Invoke URL
+// Example: https://abc123xyz.execute-api.us-east-1.amazonaws.com/prod
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export const analyzeContract = async (contractCode, chainType = 'ethereum') => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/v1/analyze`, {
+    // Updated endpoint path for API Gateway (removed /api/v1 prefix)
+    const response = await axios.post(`${API_BASE_URL}/analyze`, {
       code: contractCode
     });
     return response.data;
@@ -22,7 +25,8 @@ export const analyzeContract = async (contractCode, chainType = 'ethereum') => {
 
 export const analyzeRepo = async (githubUrl) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/v1/analyze_repo`, {
+    // Updated endpoint path for API Gateway (removed /api/v1 prefix)
+    const response = await axios.post(`${API_BASE_URL}/analyze_repo`, {
       github_url: githubUrl
     });
     return response.data;
