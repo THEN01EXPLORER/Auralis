@@ -19,7 +19,8 @@ def create_lambda_package():
     
     # Install dependencies to deploy directory
     print("Installing dependencies...")
-    os.system(f"pip install -r requirements.txt -t {deploy_dir}")
+    # Use platform-specific wheels for Lambda (Linux)
+    os.system(f"pip install -r requirements-lambda.txt -t {deploy_dir} --platform manylinux2014_x86_64 --only-binary=:all: --python-version 3.11")
     
     # Create zip file
     print("Creating deployment package...")

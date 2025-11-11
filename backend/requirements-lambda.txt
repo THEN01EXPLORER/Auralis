@@ -1,0 +1,4 @@
+fastapi==0.109.0
+mangum==0.17.0
+boto3
+gitpython
