@@ -5,6 +5,10 @@ import sys
 import os
 import time
 import logging
+import tempfile
+import shutil
+from pathlib import Path
+from git import Repo
 sys.path.append('app')
 from app.utils.risk_calculator import calculate_risk_score
 from app.services.analyzer import VulnerabilityAnalyzer
@@ -117,6 +121,9 @@ orchestrator = get_orchestrator()
 
 class ContractRequest(BaseModel):
     code: str
+
+class RepoRequest(BaseModel):
+    github_url: str
 
 @app.get("/")
 def root():
@@ -278,3 +285,151 @@ async def analyze(request: ContractRequest):
             logger.debug("Could not retrieve system resource information")
         
         raise HTTPException(status_code=500, detail="Internal server error during analysis")
+
+
+@app.post("/api/v1/analyze_repo")
+async def analyze_repo(request: RepoRequest):
+    """
+    Analyze an entire GitHub repository for smart contract vulnerabilities.
+    
+    This endpoint clones a GitHub repository, finds all .sol files, and analyzes
+    each one using the hybrid analysis orchestrator. Returns a dictionary mapping
+    filenames to their full analysis reports.
+    """
+    temp_dir = None
+    request_start_time = time.time()
+    
+    try:
+        logger.info(f"Starting repository analysis for URL: {request.github_url}")
+        
+        # Create temporary directory for cloning
+        temp_dir = tempfile.TemporaryDirectory()
+        clone_path = temp_dir.name
+        
+        logger.info(f"Cloning repository to temporary directory: {clone_path}")
+        clone_start_time = time.time()
+        
+        # Clone the repository
+        try:
+            Repo.clone_from(request.github_url, clone_path, depth=1)
+            clone_duration = int((time.time() - clone_start_time) * 1000)
+            logger.info(f"Repository cloned successfully in {clone_duration}ms")
+        except Exception as e:
+            logger.error(f"Failed to clone repository: {type(e).__name__}: {str(e)}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to clone repository. Please check the URL and ensure it's a valid public GitHub repository. Error: {str(e)}"
+            )
+        
+        # Find all .sol files in the cloned repository
+        sol_files = []
+        for sol_file in Path(clone_path).rglob("*.sol"):
+            # Skip files in common dependency directories
+            if any(skip_dir in sol_file.parts for skip_dir in ['node_modules', '.git', 'test', 'tests']):
+                continue
+            sol_files.append(sol_file)
+        
+        logger.info(f"Found {len(sol_files)} Solidity files to analyze")
+        
+        if not sol_files:
+            logger.warning("No Solidity files found in repository")
+            raise HTTPException(
+                status_code=404,
+                detail="No Solidity (.sol) files found in the repository"
+            )
+        
+        # Analyze each .sol file
+        results = {}
+        total_vulnerabilities = 0
+        
+        for sol_file in sol_files:
+            try:
+                # Read file content
+                with open(sol_file, 'r', encoding='utf-8') as f:
+                    contract_code = f.read()
+                
+                # Get relative path for cleaner filename
+                relative_path = sol_file.relative_to(clone_path)
+                filename = str(relative_path)
+                
+                logger.info(f"Analyzing file: {filename} ({len(contract_code)} characters)")
+                
+                # Analyze the contract using the orchestrator
+                analysis_result = await orchestrator.analyze_contract(contract_code)
+                
+                # Convert to response format
+                vulnerabilities_dict = []
+                for vuln in analysis_result.vulnerabilities:
+                    vuln_dict = {
+                        "type": vuln.type,
+                        "line": vuln.line,
+                        "severity": vuln.severity,
+                        "confidence": int(vuln.confidence * 100),
+                        "description": vuln.description,
+                        "recommendation": vuln.recommendation
+                    }
+                    
+                    if vuln.remediation:
+                        vuln_dict["remediation"] = {
+                            "explanation": vuln.remediation.explanation,
+                            "code_example": vuln.remediation.code_example
+                        }
+                    
+                    vulnerabilities_dict.append(vuln_dict)
+                
+                # Store result for this file
+                results[filename] = {
+                    "analysis_id": analysis_result.analysis_id,
+                    "risk_score": analysis_result.risk_score,
+                    "vulnerabilities": vulnerabilities_dict,
+                    "summary": analysis_result.summary,
+                    "analysis_method": analysis_result.analysis_method,
+                    "ai_available": analysis_result.ai_available,
+                    "processing_time_ms": analysis_result.processing_time_ms
+                }
+                
+                total_vulnerabilities += len(analysis_result.vulnerabilities)
+                logger.info(f"Completed analysis of {filename}: {len(analysis_result.vulnerabilities)} vulnerabilities, risk score: {analysis_result.risk_score}")
+                
+            except Exception as e:
+                logger.error(f"Error analyzing file {filename}: {type(e).__name__}: {str(e)}")
+                results[filename] = {
+                    "error": f"Failed to analyze file: {str(e)}",
+                    "risk_score": 0,
+                    "vulnerabilities": [],
+                    "summary": f"Analysis failed: {str(e)}"
+                }
+        
+        # Calculate total processing time
+        total_time = int((time.time() - request_start_time) * 1000)
+        
+        logger.info(f"Repository analysis completed in {total_time}ms: {len(sol_files)} files analyzed, {total_vulnerabilities} total vulnerabilities found")
+        
+        return {
+            "repository_url": request.github_url,
+            "files_analyzed": len(sol_files),
+            "total_vulnerabilities": total_vulnerabilities,
+            "processing_time_ms": total_time,
+            "results": results
+        }
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+        
+    except Exception as e:
+        total_time = int((time.time() - request_start_time) * 1000)
+        logger.error(f"Unexpected error during repository analysis after {total_time}ms: {type(e).__name__}: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Internal server error during repository analysis: {str(e)}"
+        )
+        
+    finally:
+        # Always clean up the temporary directory
+        if temp_dir:
+            try:
+                temp_dir.cleanup()
+                logger.info("Temporary directory cleaned up successfully")
+            except Exception as e:
+                logger.warning(f"Failed to clean up temporary directory: {str(e)}")

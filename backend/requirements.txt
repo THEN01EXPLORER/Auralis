@@ -3,3 +3,4 @@ uvicorn[standard]
 pydantic
 mangum
 boto3
+gitpython
