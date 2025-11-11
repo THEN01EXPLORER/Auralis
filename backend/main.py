@@ -433,3 +433,8 @@ async def analyze_repo(request: RepoRequest):
                 logger.info("Temporary directory cleaned up successfully")
             except Exception as e:
                 logger.warning(f"Failed to clean up temporary directory: {str(e)}")
+
+
+# Lambda handler for AWS deployment
+from mangum import Mangum
+handler = Mangum(app)
