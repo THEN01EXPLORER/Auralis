@@ -28,7 +28,7 @@
 
 ---
 
-### [1:15-2:30] DEMO - Show Don't Tell
+### [1:15-2:45] DEMO - Show Don't Tell
 **Visual:** Live demo of the application
 
 **[1:15-1:30] Paste Contract**
@@ -36,31 +36,34 @@
 > "Let me show you. Here's a simple Ethereum contract with a classic vulnerability."
 **Action:** Paste vulnerable bank contract
 
-**[1:30-1:50] Run Analysis**
+**[1:30-1:45] Run Analysis**
 **Narration:**
-> "Click Analyze. Within seconds, Auralis identifies multiple vulnerabilities. See the risk score? 75 out of 100—this contract is dangerous."
+> "Click Analyze. Within seconds, Auralis identifies multiple vulnerabilities. See the risk score? 85 out of 100—this contract is dangerous."
 **Action:** Click Analyze button, show results loading
 
-**[1:50-2:10] Show Results**
+**[1:45-2:00] Show Results**
 **Narration:**
 > "Each vulnerability shows its detection source. This reentrancy issue was found by both static analysis AND AI—that's why it's marked 'Hybrid' with 95% confidence."
 **Action:** Point to source badges and confidence scores
 
-**[2:10-2:30] Show Fix Feature**
+**[2:00-2:15] Show Fix Feature**
 **Narration:**
-> "But here's the game-changer. Click 'Show Fix.' Auralis doesn't just find bugs—it shows you exactly how to fix them. Detailed explanation, working code example, best practices. This is what developers actually need."
+> "But here's the game-changer. Click 'Show Fix.' Auralis doesn't just find bugs—it shows you exactly how to fix them. Detailed explanation, working code example, best practices."
 **Action:** Click Show Fix button, scroll through remediation
+
+**[2:15-2:45] Repository Scanner (WOW Feature)**
+**Narration:**
+> "And here's where it gets even better. Paste a GitHub repository URL—any public repo with Solidity contracts. Click Analyze Repo. Auralis clones it, finds every contract, and analyzes them all. See these tabs? Each one is a different file. Three contracts analyzed in seconds. This is how you audit an entire project at once."
+**Action:** Paste GitHub URL, click Analyze Repo, show loading, then click through file tabs showing different results
 
 ---
 
-### [2:30-3:00] IMPACT & CALL TO ACTION
+### [2:45-3:00] IMPACT & CALL TO ACTION
 **Visual:** Show architecture diagram, AWS logos
 **Narration:**
-> "Auralis makes smart contract security accessible to every developer. Fast analysis. Clear insights. Actionable fixes. Built entirely on AWS: Bedrock for AI, Lambda for compute, Amplify for hosting. This is the future of blockchain security—and it's available now."
+> "Auralis makes smart contract security accessible to every developer. Analyze single contracts or entire repositories. Fast, accurate, actionable. Built entirely on AWS: Bedrock for AI, Lambda for compute, Amplify for hosting. Try it yourself at [your-url]. Securing the future of blockchain, one contract at a time."
 
-**Visual:** Show live URL
-**Narration:**
-> "Try it yourself at [your-url]. Securing the future of blockchain, one contract at a time."
+**Visual:** Show live URL and fade to end card
 
 ---
 
