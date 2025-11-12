@@ -1,0 +1,84 @@
+{
+  "name": "auralis-vscode",
+  "displayName": "Auralis Security Auditor",
+  "description": "AI-powered smart contract security auditor with inline diagnostics and vulnerability visualization",
+  "version": "0.1.0",
+  "publisher": "auralis",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:solidity"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "auralis.analyzeContract",
+        "title": "Auralis: Analyze Contract"
+      },
+      {
+        "command": "auralis.showVulnerabilityTree",
+        "title": "Auralis: Show Vulnerability Tree"
+      },
+      {
+        "command": "auralis.showControlFlowGraph",
+        "title": "Auralis: Show Control Flow Graph"
+      },
+      {
+        "command": "auralis.applyFix",
+        "title": "Auralis: Apply AI Fix"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "auralisVulnerabilities",
+          "name": "Auralis Vulnerabilities"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Auralis",
+      "properties": {
+        "auralis.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "Auralis API endpoint URL"
+        },
+        "auralis.enableRealTimeAnalysis": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable real-time analysis on file save"
+        },
+        "auralis.enableSlither": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Slither integration (requires Slither installed)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/test-electron": "^2.3.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.19.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

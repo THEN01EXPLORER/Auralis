@@ -1,0 +1,161 @@
+name: Auralis PR Security Bot
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '**.sol'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Slither
+        run: |
+          pip install slither-analyzer
+          slither --version
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Find changed Solidity files
+        id: changed-files
+        run: |
+          git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.sol$' > changed_files.txt || echo "No .sol files changed"
+          cat changed_files.txt
+
+      - name: Run Auralis Analysis
+        id: auralis
+        env:
+          AURALIS_API_URL: ${{ secrets.AURALIS_API_URL || 'https://your-api-endpoint.com' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/scripts/auralis_pr_analyzer.py
+
+      - name: Comment PR with results
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            if (!fs.existsSync('auralis_results.json')) {
+              console.log('No results file found');
+              return;
+            }
+            
+            const results = JSON.parse(fs.readFileSync('auralis_results.json', 'utf8'));
+            
+            let comment = '## 🛡️ Auralis Security Analysis\n\n';
+            
+            if (results.files.length === 0) {
+              comment += '✅ No Solidity files were changed in this PR.\n';
+            } else {
+              comment += `Analyzed ${results.files.length} file(s)\n\n`;
+              
+              for (const file of results.files) {
+                comment += `### 📄 \`${file.filename}\`\n\n`;
+                comment += `**Risk Score:** ${file.risk_score}/100\n`;
+                comment += `**Vulnerabilities:** ${file.vulnerabilities.length}\n\n`;
+                
+                if (file.vulnerabilities.length > 0) {
+                  comment += '| Severity | Type | Line | Description |\n';
+                  comment += '|----------|------|------|-------------|\n';
+                  
+                  for (const vuln of file.vulnerabilities) {
+                    const emoji = vuln.severity === 'Critical' || vuln.severity === 'High' ? '🔴' : 
+                                  vuln.severity === 'Medium' ? '🟡' : '🟢';
+                    comment += `| ${emoji} ${vuln.severity} | ${vuln.type} | ${vuln.line} | ${vuln.description} |\n`;
+                  }
+                  
+                  comment += '\n';
+                  
+                  // Add fix suggestions
+                  comment += '<details><summary>💡 View Fix Suggestions</summary>\n\n';
+                  for (const vuln of file.vulnerabilities) {
+                    if (vuln.remediation) {
+                      comment += `**${vuln.type} (Line ${vuln.line})**\n\n`;
+                      comment += `${vuln.remediation.explanation}\n\n`;
+                      comment += '```solidity\n';
+                      comment += vuln.remediation.code_example + '\n';
+                      comment += '```\n\n';
+                    }
+                  }
+                  comment += '</details>\n\n';
+                } else {
+                  comment += '✅ No vulnerabilities detected!\n\n';
+                }
+              }
+            }
+            
+            comment += '\n---\n';
+            comment += `*Analysis Method: ${results.analysis_method || 'hybrid'}*\n`;
+            comment += `*Powered by [Auralis](https://github.com/your-org/auralis) 🛡️*`;
+            
+            // Post comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Add inline comments for vulnerabilities
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            
+            if (!fs.existsSync('auralis_results.json')) {
+              return;
+            }
+            
+            const results = JSON.parse(fs.readFileSync('auralis_results.json', 'utf8'));
+            
+            for (const file of results.files) {
+              for (const vuln of file.vulnerabilities) {
+                const suggestion = vuln.remediation?.code_example || null;
+                
+                let body = `**${vuln.type}** (${vuln.severity})\n\n`;
+                body += `${vuln.description}\n\n`;
+                body += `**Recommendation:** ${vuln.recommendation}\n`;
+                
+                if (suggestion) {
+                  body += '\n**Suggested Fix:**\n```suggestion\n';
+                  body += suggestion + '\n```';
+                }
+                
+                try {
+                  await github.rest.pulls.createReviewComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: context.issue.number,
+                    body: body,
+                    path: file.filename,
+                    line: vuln.line,
+                    side: 'RIGHT'
+                  });
+                } catch (error) {
+                  console.log(`Could not add inline comment: ${error.message}`);
+                }
+              }
+            }

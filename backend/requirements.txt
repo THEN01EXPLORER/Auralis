@@ -4,3 +4,6 @@ pydantic
 mangum
 boto3
 gitpython
+reportlab
+requests
+slither-analyzer

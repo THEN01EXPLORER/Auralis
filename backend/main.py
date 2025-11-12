@@ -14,6 +14,8 @@ from app.utils.risk_calculator import calculate_risk_score
 from app.services.analyzer import VulnerabilityAnalyzer
 from app.services.bedrock_analyzer import BedrockAnalyzer
 from app.services.analysis_orchestrator import AnalysisOrchestrator
+from app.services.dread_scorer import DREADScorer
+from app.services.pdf_report_generator import PDFReportGenerator
 from app.models.contract import AnalyzeResponse
 
 # Configure logging with environment-based settings
@@ -433,6 +435,92 @@ async def analyze_repo(request: RepoRequest):
                 logger.info("Temporary directory cleaned up successfully")
             except Exception as e:
                 logger.warning(f"Failed to clean up temporary directory: {str(e)}")
+
+
+@app.post("/api/v1/dread_score")
+async def calculate_dread(request: ContractRequest):
+    """
+    Calculate DREAD risk scores for a contract
+    """
+    try:
+        # First analyze the contract
+        analysis_result = await orchestrator.analyze_contract(request.code)
+        
+        # Calculate DREAD scores
+        dread_scorer = DREADScorer()
+        dread_scores = dread_scorer.calculate_aggregate_dread(analysis_result.vulnerabilities)
+        
+        return {
+            'analysis_id': analysis_result.analysis_id,
+            'risk_score': analysis_result.risk_score,
+            'dread_scores': dread_scores,
+            'vulnerabilities_count': len(analysis_result.vulnerabilities)
+        }
+    except Exception as e:
+        logger.error(f"DREAD scoring error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to calculate DREAD scores")
+
+
+@app.post("/api/v1/generate_report")
+async def generate_report(request: ContractRequest):
+    """
+    Generate a PDF audit report for a contract
+    """
+    try:
+        # Analyze the contract
+        analysis_result = await orchestrator.analyze_contract(request.code)
+        
+        # Calculate DREAD scores
+        dread_scorer = DREADScorer()
+        
+        # Convert vulnerabilities to dict format for DREAD scorer
+        vulns_dict = [
+            {
+                'type': v.type,
+                'line': v.line,
+                'severity': v.severity,
+                'description': v.description,
+                'recommendation': v.recommendation
+            }
+            for v in analysis_result.vulnerabilities
+        ]
+        
+        dread_scores = dread_scorer.calculate_aggregate_dread(vulns_dict)
+        
+        # Generate PDF
+        pdf_generator = PDFReportGenerator()
+        
+        if not pdf_generator.available:
+            raise HTTPException(
+                status_code=503,
+                detail="PDF generation not available. Install reportlab: pip install reportlab"
+            )
+        
+        # Prepare analysis result dict
+        analysis_dict = {
+            'analysis_id': analysis_result.analysis_id,
+            'risk_score': analysis_result.risk_score,
+            'vulnerabilities': vulns_dict,
+            'analysis_method': analysis_result.analysis_method
+        }
+        
+        pdf_bytes = pdf_generator.generate_report(analysis_dict, dread_scores)
+        
+        # Return PDF as response
+        from fastapi.responses import Response
+        return Response(
+            content=pdf_bytes,
+            media_type='application/pdf',
+            headers={
+                'Content-Disposition': f'attachment; filename="auralis_audit_{analysis_result.analysis_id}.pdf"'
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"PDF generation error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to generate PDF report")
 
 
 # Lambda handler for AWS deployment
