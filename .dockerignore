@@ -1,0 +1,30 @@
+# Backend
+backend/__pycache__
+backend/*.pyc
+backend/.pytest_cache
+backend/venv
+backend/.env
+backend/auralis.log
+
+# Frontend
+frontend/node_modules
+frontend/build
+frontend/.env.local
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

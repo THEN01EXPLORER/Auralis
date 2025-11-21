@@ -57,7 +57,13 @@ contract VulnerableBank {
         onChange={(e) => setCode(e.target.value)}
         className="code-textarea"
         spellCheck="false"
+        placeholder="Paste your Solidity contract code here..."
+        aria-label="Smart contract code editor"
+        aria-describedby="code-editor-description"
       />
+      <div id="code-editor-description" className="sr-only">
+        Enter your Solidity smart contract code for security analysis
+      </div>
     </div>
   );
 }

@@ -6,13 +6,12 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 export const analyzeContract = async (contractCode, chainType = 'ethereum') => {
   try {
-    // Updated endpoint path for API Gateway (removed /api/v1 prefix)
-    const response = await axios.post(`${API_BASE_URL}/analyze`, {
+    // Use /api/v1 prefix for production API
+    const response = await axios.post(`${API_BASE_URL}/api/v1/analyze`, {
       code: contractCode
     });
     return response.data;
   } catch (error) {
-    console.error('Error analyzing contract:', error);
     if (error.response) {
       throw new Error(`Server error: ${error.response.data.detail || error.response.statusText}`);
     } else if (error.request) {
@@ -25,13 +24,12 @@ export const analyzeContract = async (contractCode, chainType = 'ethereum') => {
 
 export const analyzeRepo = async (githubUrl) => {
   try {
-    // Updated endpoint path for API Gateway (removed /api/v1 prefix)
-    const response = await axios.post(`${API_BASE_URL}/analyze_repo`, {
+    // Use /api/v1 prefix for production API
+    const response = await axios.post(`${API_BASE_URL}/api/v1/analyze_repo`, {
       github_url: githubUrl
     });
     return response.data;
   } catch (error) {
-    console.error('Error analyzing repository:', error);
     if (error.response) {
       throw new Error(`Server error: ${error.response.data.detail || error.response.statusText}`);
     } else if (error.request) {
@@ -48,6 +46,26 @@ export const healthCheck = async () => {
     return response.data;
   } catch (error) {
     console.error('Health check failed:', error);
+    throw error;
+  }
+};
+
+export const getStats = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/v1/stats`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch stats:', error);
+    throw error;
+  }
+};
+
+export const getSupportedPatterns = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/v1/supported_patterns`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch supported patterns:', error);
     throw error;
   }
 };

@@ -1,3 +1,6 @@
 @echo off
-python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
+echo Starting Auralis Backend Server...
+echo.
+cd /d %~dp0
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 pause

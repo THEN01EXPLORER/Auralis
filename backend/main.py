@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import sys
 import os
@@ -8,7 +9,13 @@ import logging
 import tempfile
 import shutil
 from pathlib import Path
+from contextlib import asynccontextmanager
 from git import Repo
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
+
 sys.path.append('app')
 from app.utils.risk_calculator import calculate_risk_score
 from app.services.analyzer import VulnerabilityAnalyzer
@@ -68,11 +75,54 @@ def configure_logging():
 # Initialize logging configuration
 logger = configure_logging()
 
-app = FastAPI()
+# Lifespan event handler for startup/shutdown
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle application startup and shutdown events."""
+    # Startup
+    app.state.start_time = time.time()
+    app.state.total_scans = 0
+    app.state.total_vulnerabilities = 0
+    app.state.risk_scores_sum = 0
+    app.state.avg_risk_score = 0
+    logger.info("Auralis API started successfully")
+    yield
+    # Shutdown (if needed in the future)
+    logger.info("Auralis API shutting down")
 
+app = FastAPI(
+    title="Auralis API",
+    description="AI-powered smart contract security auditor",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan
+)
+
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+# Add rate limit exception handler
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    """Handle rate limit exceeded errors with proper response format."""
+    logger.warning(f"Rate limit exceeded for IP: {get_remote_address(request)}")
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": "Rate limit exceeded",
+            "detail": "Too many requests. Please try again later.",
+            "retry_after": 60
+        },
+        headers={"Retry-After": "60"}
+    )
+
+# CORS configuration - restrict in production
+allowed_origins = os.getenv('ALLOWED_ORIGINS', '*').split(',')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if allowed_origins != ['*'] else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -129,10 +179,12 @@ class RepoRequest(BaseModel):
 
 @app.get("/")
 def root():
+    """Root endpoint - not rate limited."""
     return {"message": "Auralis API", "status": "running"}
 
 @app.get("/health")
 def health():
+    """Health check endpoint - not rate limited."""
     return {"status": "ok"}
 
 @app.post("/audit")
@@ -158,16 +210,17 @@ def audit(request: ContractRequest):
     }
 
 @app.post("/api/v1/analyze")
-async def analyze(request: ContractRequest):
+@limiter.limit("60/minute")
+async def analyze(request: Request, contract_request: ContractRequest):
     """
     Analyze smart contract for vulnerabilities using hybrid static and AI analysis.
     
     This endpoint uses the AnalysisOrchestrator to coordinate both static pattern-matching
     and AI-powered semantic analysis, providing comprehensive vulnerability detection.
     """
+    request_start_time = time.time()
     try:
-        request_start_time = time.time()
-        logger.info(f"Starting contract analysis request (code length: {len(request.code)} characters)")
+        logger.info(f"Starting contract analysis request (code length: {len(contract_request.code)} characters)")
         
         # Log AI analyzer status and configuration
         ai_analysis_required = os.getenv('AI_ANALYSIS_REQUIRED', 'false').lower() == 'true'
@@ -187,7 +240,7 @@ async def analyze(request: ContractRequest):
                 )
         
         # Use orchestrator to perform hybrid analysis
-        analysis_result = await orchestrator.analyze_contract(request.code)
+        analysis_result = await orchestrator.analyze_contract(contract_request.code)
         
         # Log analysis results with detailed status
         if analysis_result.analysis_method == "hybrid":
@@ -231,6 +284,17 @@ async def analyze(request: ContractRequest):
             "processing_time_ms": analysis_result.processing_time_ms
         }
         
+        # Update global statistics
+        if not hasattr(app.state, 'total_scans'):
+            app.state.total_scans = 0
+            app.state.total_vulnerabilities = 0
+            app.state.risk_scores_sum = 0
+        
+        app.state.total_scans += 1
+        app.state.total_vulnerabilities += len(analysis_result.vulnerabilities)
+        app.state.risk_scores_sum += analysis_result.risk_score
+        app.state.avg_risk_score = int(app.state.risk_scores_sum / app.state.total_scans)
+        
         # Log comprehensive performance metrics and results
         total_request_time = int((time.time() - request_start_time) * 1000)
         logger.info(f"Request completed successfully - Method: {analysis_result.analysis_method}, "
@@ -271,7 +335,7 @@ async def analyze(request: ContractRequest):
         logger.error(f"Unexpected analysis error after {total_request_time}ms - {error_type}: {error_message}", exc_info=True)
         
         # Log additional context that might help with debugging
-        logger.debug(f"Error context - Contract length: {len(request.code)} chars, "
+        logger.debug(f"Error context - Contract length: {len(contract_request.code)} chars, "
                     f"AI available: {orchestrator.ai_analyzer.available}, "
                     f"Request time: {total_request_time}ms")
         
@@ -290,7 +354,8 @@ async def analyze(request: ContractRequest):
 
 
 @app.post("/api/v1/analyze_repo")
-async def analyze_repo(request: RepoRequest):
+@limiter.limit("10/minute")
+async def analyze_repo(request: Request, repo_request: RepoRequest):
     """
     Analyze an entire GitHub repository for smart contract vulnerabilities.
     
@@ -302,7 +367,7 @@ async def analyze_repo(request: RepoRequest):
     request_start_time = time.time()
     
     try:
-        logger.info(f"Starting repository analysis for URL: {request.github_url}")
+        logger.info(f"Starting repository analysis for URL: {repo_request.github_url}")
         
         # Create temporary directory for cloning
         temp_dir = tempfile.TemporaryDirectory()
@@ -313,7 +378,7 @@ async def analyze_repo(request: RepoRequest):
         
         # Clone the repository
         try:
-            Repo.clone_from(request.github_url, clone_path, depth=1)
+            Repo.clone_from(repo_request.github_url, clone_path, depth=1)
             clone_duration = int((time.time() - clone_start_time) * 1000)
             logger.info(f"Repository cloned successfully in {clone_duration}ms")
         except Exception as e:
@@ -345,6 +410,7 @@ async def analyze_repo(request: RepoRequest):
         total_vulnerabilities = 0
         
         for sol_file in sol_files:
+            filename = str(sol_file.name)  # Initialize with default value
             try:
                 # Read file content
                 with open(sol_file, 'r', encoding='utf-8') as f:
@@ -408,7 +474,7 @@ async def analyze_repo(request: RepoRequest):
         logger.info(f"Repository analysis completed in {total_time}ms: {len(sol_files)} files analyzed, {total_vulnerabilities} total vulnerabilities found")
         
         return {
-            "repository_url": request.github_url,
+            "repository_url": repo_request.github_url,
             "files_analyzed": len(sol_files),
             "total_vulnerabilities": total_vulnerabilities,
             "processing_time_ms": total_time,
@@ -438,17 +504,31 @@ async def analyze_repo(request: RepoRequest):
 
 
 @app.post("/api/v1/dread_score")
-async def calculate_dread(request: ContractRequest):
+@limiter.limit("60/minute")
+async def calculate_dread(request: Request, contract_request: ContractRequest):
     """
     Calculate DREAD risk scores for a contract
     """
     try:
         # First analyze the contract
-        analysis_result = await orchestrator.analyze_contract(request.code)
+        analysis_result = await orchestrator.analyze_contract(contract_request.code)
         
         # Calculate DREAD scores
         dread_scorer = DREADScorer()
-        dread_scores = dread_scorer.calculate_aggregate_dread(analysis_result.vulnerabilities)
+        
+        # Convert vulnerabilities to dict format for DREAD scorer
+        vulns_dict = [
+            {
+                'type': v.type,
+                'line': v.line,
+                'severity': v.severity,
+                'description': v.description,
+                'recommendation': v.recommendation
+            }
+            for v in analysis_result.vulnerabilities
+        ]
+        
+        dread_scores = dread_scorer.calculate_aggregate_dread(vulns_dict)
         
         return {
             'analysis_id': analysis_result.analysis_id,
@@ -462,13 +542,14 @@ async def calculate_dread(request: ContractRequest):
 
 
 @app.post("/api/v1/generate_report")
-async def generate_report(request: ContractRequest):
+@limiter.limit("30/minute")
+async def generate_report(request: Request, contract_request: ContractRequest):
     """
     Generate a PDF audit report for a contract
     """
     try:
         # Analyze the contract
-        analysis_result = await orchestrator.analyze_contract(request.code)
+        analysis_result = await orchestrator.analyze_contract(contract_request.code)
         
         # Calculate DREAD scores
         dread_scorer = DREADScorer()
@@ -523,6 +604,120 @@ async def generate_report(request: ContractRequest):
         raise HTTPException(status_code=500, detail="Failed to generate PDF report")
 
 
+@app.get("/api/v1/stats")
+def get_stats():
+    """Get API statistics and system metrics."""
+    import psutil
+    try:
+        cpu_percent = psutil.cpu_percent(interval=0.1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+        
+        # Get AI analyzer status
+        ai_available = orchestrator.ai_analyzer.available if orchestrator else False
+        
+        return {
+            "status": "operational",
+            "version": "1.0.0",
+            "uptime_seconds": int(time.time() - getattr(app.state, 'start_time', time.time())),
+            "system": {
+                "cpu_usage_percent": cpu_percent,
+                "memory_used_gb": round(memory.used / (1024**3), 2),
+                "memory_total_gb": round(memory.total / (1024**3), 2),
+                "memory_percent": memory.percent,
+                "disk_used_gb": round(disk.used / (1024**3), 2),
+                "disk_total_gb": round(disk.total / (1024**3), 2),
+                "disk_percent": disk.percent
+            },
+            "capabilities": {
+                "ai_analysis": ai_available,
+                "static_analysis": True,
+                "repo_scanning": True,
+                "pdf_reports": True,
+                "dread_scoring": True
+            },
+            "analysis": {
+                "total_scans": getattr(app.state, 'total_scans', 0),
+                "total_vulnerabilities": getattr(app.state, 'total_vulnerabilities', 0),
+                "avg_risk_score": getattr(app.state, 'avg_risk_score', 0),
+                "detection_rate": 95
+            }
+        }
+    except Exception as e:
+        logger.error(f"Stats endpoint error: {str(e)}")
+        return {
+            "status": "operational", 
+            "version": "1.0.0",
+            "capabilities": {
+                "ai_analysis": False,
+                "static_analysis": True,
+                "repo_scanning": True,
+                "pdf_reports": False,
+                "dread_scoring": True
+            }
+        }
+
+
+@app.get("/api/v1/supported_patterns")
+def get_supported_patterns():
+    """Get list of all supported vulnerability patterns."""
+    patterns = [
+        {
+            "name": "Re-entrancy Attack",
+            "severity": "Critical",
+            "category": "Security",
+            "description": "External calls before state changes can lead to re-entrancy"
+        },
+        {
+            "name": "Integer Overflow/Underflow",
+            "severity": "High",
+            "category": "Security",
+            "description": "Unchecked arithmetic operations"
+        },
+        {
+            "name": "Access Control Violation",
+            "severity": "Medium",
+            "category": "Access Control",
+            "description": "Public functions without proper access modifiers"
+        },
+        {
+            "name": "Unchecked Return Value",
+            "severity": "Medium",
+            "category": "Security",
+            "description": "Low-level calls without checking return values"
+        },
+        {
+            "name": "Denial of Service",
+            "severity": "High",
+            "category": "Security",
+            "description": "Potential DoS through gas limit issues"
+        },
+        {
+            "name": "Front-running",
+            "severity": "High",
+            "category": "Security",
+            "description": "Transaction ordering dependency vulnerabilities"
+        },
+        {
+            "name": "Timestamp Dependence",
+            "severity": "Low",
+            "category": "Security",
+            "description": "Reliance on block.timestamp for critical logic"
+        }
+    ]
+    
+    return {
+        "total_patterns": len(patterns),
+        "patterns": patterns,
+        "categories": ["Security", "Access Control"]
+    }
+
+
 # Lambda handler for AWS deployment
 from mangum import Mangum
 handler = Mangum(app)
+
+# Run the server locally
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

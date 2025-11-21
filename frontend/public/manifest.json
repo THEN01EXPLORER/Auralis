@@ -1,0 +1,40 @@
+{
+  "short_name": "Auralis",
+  "name": "Auralis - Smart Contract Security Auditor",
+  "description": "AI-powered smart contract security auditor with hybrid analysis",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0a0e27",
+  "background_color": "#0a0e27",
+  "orientation": "portrait-primary",
+  "categories": ["developer", "security", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Analyze Contract",
+      "short_name": "Analyze",
+      "description": "Start analyzing a smart contract",
+      "url": "/analyze",
+      "icons": []
+    }
+  ]
+}
+
+

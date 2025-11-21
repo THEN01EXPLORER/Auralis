@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auralis API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        textarea { width: 100%; height: 200px; font-family: monospace; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px; }
+        .vuln { margin: 10px 0; padding: 10px; background: white; border-left: 4px solid #dc3545; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ Auralis API Test</h1>
+    
+    <h3>Test Contract Code:</h3>
+    <textarea id="contractCode">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract VulnerableBank {
+    mapping(address => uint) public balances;
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount);
+        (bool success, ) = msg.sender.call{value: amount}("");
+        balances[msg.sender] -= amount;
+    }
+}</textarea>
+    
+    <br><br>
+    <button onclick="testAnalyze()">🔍 Analyze Contract</button>
+    <button onclick="testHealth()">❤️ Check Backend Health</button>
+    
+    <div id="result" class="result" style="display:none;"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        async function testHealth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>Testing backend health...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                resultDiv.innerHTML = `<p class="success">✅ Backend is healthy!</p><pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Backend connection failed: ${error.message}</p>`;
+            }
+        }
+        
+        async function testAnalyze() {
+            const resultDiv = document.getElementById('result');
+            const code = document.getElementById('contractCode').value;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>Analyzing contract...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/v1/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code })
+                });
+                
+                const data = await response.json();
+                
+                let html = `
+                    <h3 class="success">✅ Analysis Complete!</h3>
+                    <p><strong>Risk Score:</strong> ${data.risk_score}</p>
+                    <p><strong>Analysis Method:</strong> ${data.analysis_method}</p>
+                    <p><strong>AI Available:</strong> ${data.ai_available ? 'Yes' : 'No'}</p>
+                    <p><strong>Processing Time:</strong> ${data.processing_time_ms}ms</p>
+                    <p><strong>Summary:</strong> ${data.summary}</p>
+                    <h4>Vulnerabilities Found: ${data.vulnerabilities.length}</h4>
+                `;
+                
+                if (data.vulnerabilities.length > 0) {
+                    data.vulnerabilities.forEach(vuln => {
+                        html += `
+                            <div class="vuln">
+                                <strong>${vuln.type}</strong> (Line ${vuln.line}) - ${vuln.severity}<br>
+                                ${vuln.description}<br>
+                                <em>Recommendation: ${vuln.recommendation}</em>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p class="success">No vulnerabilities detected!</p>';
+                }
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Analysis failed: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "LogGroups": [
+    {
+      "LogGroupName": "/aws/lambda/auralis-api",
+      "RetentionInDays": 30
+    }
+  ],
+  "Dashboards": [
+    {
+      "DashboardName": "Auralis-API-Monitoring",
+      "DashboardBody": {
+        "widgets": [
+          {
+            "type": "metric",
+            "properties": {
+              "metrics": [
+                ["AWS/Lambda", "Duration", {"stat": "Average"}],
+                ["AWS/Lambda", "Errors", {"stat": "Sum"}],
+                ["AWS/Lambda", "Throttles", {"stat": "Sum"}],
+                ["AWS/Lambda", "Invocations", {"stat": "Sum"}]
+              ],
+              "period": 300,
+              "stat": "Average",
+              "region": "us-east-1",
+              "title": "Lambda Performance"
+            }
+          },
+          {
+            "type": "log",
+            "properties": {
+              "query": "fields @timestamp, @message, @duration | stats avg(@duration) by bin(5m)",
+              "region": "us-east-1",
+              "title": "Average Response Time"
+            }
+          },
+          {
+            "type": "log",
+            "properties": {
+              "query": "fields @timestamp, @message | filter @message like /ERROR/ | stats count() by bin(5m)",
+              "region": "us-east-1",
+              "title": "Error Rate"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "Alarms": [
+    {
+      "AlarmName": "Auralis-API-High-Error-Rate",
+      "MetricName": "Errors",
+      "Namespace": "AWS/Lambda",
+      "Statistic": "Sum",
+      "Period": 300,
+      "EvaluationPeriods": 1,
+      "Threshold": 10,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "AlarmActions": []
+    },
+    {
+      "AlarmName": "Auralis-API-High-Duration",
+      "MetricName": "Duration",
+      "Namespace": "AWS/Lambda",
+      "Statistic": "Average",
+      "Period": 300,
+      "EvaluationPeriods": 2,
+      "Threshold": 25000,
+      "ComparisonOperator": "GreaterThanThreshold",
+      "AlarmActions": []
+    }
+  ]
+}

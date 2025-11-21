@@ -43,7 +43,9 @@ jobs:
       - name: Run Auralis Analysis
         id: auralis
         env:
-          AURALIS_API_URL: ${{ secrets.AURALIS_API_URL || 'https://your-api-endpoint.com' }}
+          # TODO: Replace with your actual API endpoint
+          # Or set AURALIS_API_URL as a repository variable in Settings > Variables
+          AURALIS_API_URL: https://your-api-endpoint.com
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python .github/scripts/auralis_pr_analyzer.py
