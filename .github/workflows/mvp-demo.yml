@@ -153,6 +153,9 @@ jobs:
       
       - name: Start backend
         env:
+          # Ensure CI does not attempt Bedrock calls
+          ENABLE_AI_ANALYSIS: 'false'
+          AI_ANALYSIS_REQUIRED: 'false'
           AWS_ACCESS_KEY_ID: dummy
           AWS_SECRET_ACCESS_KEY: dummy
           AWS_DEFAULT_REGION: us-east-1
