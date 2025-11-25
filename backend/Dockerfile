@@ -23,6 +23,6 @@ COPY . /app
 # Expose port 10000 for Render (uses $PORT env variable in production)
 EXPOSE 10000
 
-# Start Uvicorn with PORT environment variable (Render injects this)
-# Falls back to 10000 if PORT is not set
-CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}
+# Start with gunicorn for production with memory-optimized settings
+# Use only 2 workers to stay under Render's 512MB free tier limit
+CMD ["gunicorn", "main:app", "-c", "gunicorn.conf.py"]
