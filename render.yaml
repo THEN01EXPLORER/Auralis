@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: auralis-backend
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: PORT
+        value: 10000
+            - key: WORKERS
+              value: 2
+      - key: ENABLE_AI_ANALYSIS
+        value: false
+      - key: AI_ANALYSIS_REQUIRED
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    healthCheckPath: /health
