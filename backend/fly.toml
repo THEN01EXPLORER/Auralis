@@ -1,16 +1,20 @@
 app = "auralis-backend"
-kill_signal = "SIGINT"
-kill_timeout = 5
 
 [build]
-  image = "Dockerfile"
 
 [env]
   ENABLE_AI_ANALYSIS = "false"
   AI_ANALYSIS_REQUIRED = "false"
-  AWS_REGION = "us-east-1"
-  BEDROCK_MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
+  LOG_LEVEL = "INFO"
 
-[experimental]
-  allowed_public_ports = [8080]
-  auto_rollback = true
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1

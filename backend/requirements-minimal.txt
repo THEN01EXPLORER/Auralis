@@ -1,0 +1,7 @@
+# Minimal requirements for static analysis only (no AI/Bedrock)
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+slowapi==0.1.9
+requests==2.31.0
