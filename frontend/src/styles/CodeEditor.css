@@ -257,3 +257,113 @@
   user-select: none;
   border-right: 1px solid #3e3e3e;
 }
+
+/* ====================================
+   LIGHT MODE STYLES
+   ==================================== */
+
+[data-theme="light"] .code-editor-section {
+  background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .code-editor-section::before {
+  background: linear-gradient(180deg, rgba(8, 145, 178, 0.03), transparent);
+}
+
+[data-theme="light"] .editor-header h2 {
+  color: #1e293b;
+}
+
+[data-theme="light"] .editor-header h2 .code-icon {
+  color: #0891b2;
+}
+
+[data-theme="light"] .editor-header h2::after {
+  background: linear-gradient(90deg, #0891b2, transparent);
+}
+
+[data-theme="light"] .sample-selector select {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .sample-selector select:hover {
+  border-color: #0891b2;
+  background: #f0fdfa;
+}
+
+[data-theme="light"] .sample-selector select:focus {
+  border-color: #0891b2;
+  box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15);
+}
+
+[data-theme="light"] .copy-btn,
+[data-theme="light"] .clear-btn {
+  background: rgba(8, 145, 178, 0.08);
+  color: #0891b2;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .copy-btn:hover {
+  background: rgba(8, 145, 178, 0.15);
+  border-color: #0891b2;
+}
+
+[data-theme="light"] .clear-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+[data-theme="light"] .code-textarea {
+  background: #ffffff;
+  color: #334155;
+  border: 2px solid #e2e8f0;
+}
+
+[data-theme="light"] .code-textarea:focus {
+  border-color: #0891b2;
+  box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15);
+  background: #ffffff;
+}
+
+[data-theme="light"] .code-textarea::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .analyze-btn {
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  box-shadow: 0 4px 16px rgba(8, 145, 178, 0.4);
+}
+
+[data-theme="light"] .analyze-btn:hover {
+  box-shadow: 0 8px 24px rgba(8, 145, 178, 0.5);
+}
+
+[data-theme="light"] .analyze-btn .shortcut {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .editor-footer {
+  border-top-color: #e2e8f0;
+  color: #64748b;
+}
+
+[data-theme="light"] .line-count,
+[data-theme="light"] .char-count {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .hint {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .line-numbers {
+  background: #f8fafc;
+  color: #94a3b8;
+  border-right-color: #e2e8f0;
+}

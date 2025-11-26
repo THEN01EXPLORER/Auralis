@@ -149,3 +149,55 @@
     width: 100%;
   }
 }
+
+/* ====================================
+   LIGHT MODE STYLES
+   ==================================== */
+
+[data-theme="light"] .repo-scanner-section {
+  background: rgba(8, 145, 178, 0.03);
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .repo-scanner-section:hover {
+  border-color: #0891b2;
+  box-shadow: 0 8px 32px rgba(8, 145, 178, 0.15);
+}
+
+[data-theme="light"] .repo-scanner-section h3 {
+  color: #0891b2;
+}
+
+[data-theme="light"] .section-divider {
+  color: #64748b;
+}
+
+[data-theme="light"] .section-divider::before,
+[data-theme="light"] .section-divider::after {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .repo-url-input {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .repo-url-input:focus {
+  border-color: #0891b2;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15);
+}
+
+[data-theme="light"] .repo-url-input::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .analyze-repo-button {
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  box-shadow: 0 4px 16px rgba(8, 145, 178, 0.3);
+}
+
+[data-theme="light"] .analyze-repo-button:hover {
+  box-shadow: 0 8px 24px rgba(8, 145, 178, 0.4);
+}
