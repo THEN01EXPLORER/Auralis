@@ -20,6 +20,7 @@ function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [stats, setStats] = useState({ totalScans: 0, criticalFound: 0, avgRiskScore: 0 });
   const [darkMode, setDarkMode] = useState(true);
+  const [currentCode, setCurrentCode] = useState('');
 
   const handleAnalyze = async (code) => {
     if (!code.trim()) {
@@ -27,6 +28,9 @@ function Home() {
       return;
     }
 
+    // Store code for export
+    setCurrentCode(code);
+    
     setLoading(true);
     setError(null);
     setAnalysisMode('code');
@@ -272,6 +276,7 @@ function Home() {
           error={error} 
           onLineClick={handleLineClick}
           isRepoAnalysis={analysisMode === 'repo'}
+          contractCode={currentCode}
         />
       </div>
       

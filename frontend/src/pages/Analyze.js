@@ -17,6 +17,7 @@ const Analyze = memo(function Analyze() {
   const [highlightLine, setHighlightLine] = useState(null);
   const [repoUrl, setRepoUrl] = useState('');
   const [analysisMode, setAnalysisMode] = useState('code');
+  const [currentCode, setCurrentCode] = useState('');
 
   const handleAnalyze = useCallback(async (code) => {
     // Validate input
@@ -36,6 +37,9 @@ const Analyze = memo(function Analyze() {
       return;
     }
 
+    // Store the current code for export
+    setCurrentCode(sanitizedCode);
+    
     setLoading(true);
     setError(null);
     setProgress(0);
@@ -180,6 +184,7 @@ const Analyze = memo(function Analyze() {
           error={error} 
           onLineClick={handleLineClick}
           isRepoAnalysis={analysisMode === 'repo'}
+          contractCode={currentCode}
         />
       </div>
     </div>
