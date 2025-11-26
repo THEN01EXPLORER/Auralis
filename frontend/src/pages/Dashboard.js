@@ -79,9 +79,39 @@ function Dashboard() {
   };
 
   const handleExport = () => {
-    // Navigate to analyze page where export is available after scanning
-    toast.info('Run a scan first, then use the export buttons in the report!');
-    navigate('/analyze');
+    // Export dashboard data as JSON
+    const exportData = {
+      report_type: "Auralis Dashboard Export",
+      exported_at: new Date().toISOString(),
+      summary: {
+        total_contracts_analyzed: stats.totalScans,
+        critical_issues_found: stats.criticalFound,
+        average_risk_score: stats.avgRiskScore,
+        detection_rate: `${stats.detectionRate}%`
+      },
+      recent_scans: recentScans.map(scan => ({
+        name: scan.name,
+        risk_score: scan.risk,
+        status: scan.status,
+        vulnerabilities: scan.vulnerabilities,
+        date: scan.date
+      })),
+      security_trends: securityTrends,
+      generated_by: "Auralis Smart Contract Security Auditor"
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `auralis-dashboard-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Dashboard data exported successfully!');
   };
 
   return (
