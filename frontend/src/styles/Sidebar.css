@@ -18,6 +18,15 @@
   width: 80px;
 }
 
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.sidebar.collapsed .nav-icon {
+  min-width: auto;
+}
+
 .sidebar-header {
   padding: var(--spacing-xl);
   border-bottom: 1px solid var(--border-color);
@@ -180,6 +189,26 @@
 .sidebar-footer {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+/* Collapsed state for footer */
+.sidebar.collapsed .sidebar-footer {
+  padding: var(--spacing-sm);
+}
+
+.sidebar.collapsed .social-links {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar.collapsed .social-link {
+  width: 32px;
+  height: 32px;
+}
+
+.sidebar.collapsed .version-info {
+  display: none;
 }
 
 /* Social Links */
