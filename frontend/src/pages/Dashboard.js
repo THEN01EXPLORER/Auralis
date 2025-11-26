@@ -79,7 +79,9 @@ function Dashboard() {
   };
 
   const handleExport = () => {
-    toast.info('Export feature coming soon!');
+    // Navigate to analyze page where export is available after scanning
+    toast.info('Run a scan first, then use the export buttons in the report!');
+    navigate('/analyze');
   };
 
   return (
