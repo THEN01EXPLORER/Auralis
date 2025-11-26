@@ -679,19 +679,6 @@ def get_stats():
             "detection_rate": 95
         }
     }
-    except Exception as e:
-        logger.error(f"Stats endpoint error: {str(e)}")
-        return {
-            "status": "operational", 
-            "version": "1.0.0",
-            "capabilities": {
-                "ai_analysis": False,
-                "static_analysis": True,
-                "repo_scanning": True,
-                "pdf_reports": False,
-                "dread_scoring": True
-            }
-        }
 
 
 @app.get("/api/v1/supported_patterns")
