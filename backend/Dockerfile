@@ -10,8 +10,8 @@ COPY requirements-minimal.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source
-COPY . /app
+# Copy only the minimal main file
+COPY main_minimal.py ./main.py
 
 # Expose port 10000 for Render (uses $PORT env variable in production)
 EXPOSE 10000
