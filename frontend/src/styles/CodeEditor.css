@@ -18,6 +18,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .editor-header h3 {
@@ -26,6 +28,12 @@
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.5px;
+}
+
+.editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .editor-info {
@@ -42,21 +50,111 @@
   gap: 5px;
 }
 
+/* Sample Dropdown */
+.sample-dropdown {
+  position: relative;
+}
+
+.sample-btn {
+  background: #2d2d2d;
+  color: #d4d4d4;
+  border: 1px solid #3e3e3e;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.sample-btn:hover {
+  background: #3e3e3e;
+  border-color: var(--primary-cyan);
+  color: var(--primary-cyan);
+}
+
+.sample-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+  background: #1e1e1e;
+  border: 1px solid #3e3e3e;
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 200px;
+  z-index: 100;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sample-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  color: #d4d4d4;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.sample-item:hover {
+  background: #2d2d2d;
+  color: var(--primary-cyan);
+}
+
+/* Icon Buttons */
+.icon-btn {
+  background: #2d2d2d;
+  border: 1px solid #3e3e3e;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: #3e3e3e;
+  border-color: var(--primary-cyan);
+  transform: scale(1.05);
+}
+
 .analyze-btn {
   background: linear-gradient(135deg, var(--primary-cyan) 0%, var(--primary-purple) 100%);
   color: var(--text-primary);
   border: none;
-  padding: 14px 32px;
+  padding: 12px 24px;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all var(--transition-base);
   box-shadow: 0 4px 16px rgba(97, 218, 251, 0.4);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.analyze-btn .shortcut {
+  font-size: 10px;
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: normal;
+  text-transform: none;
 }
 
 .analyze-btn::before {
@@ -98,7 +196,7 @@
 
 .code-textarea {
   width: 100%;
-  min-height: 450px;
+  min-height: 400px;
   background: var(--bg-darker);
   color: var(--text-secondary);
   border: 2px solid var(--border-color);
@@ -121,6 +219,29 @@
 .code-textarea::placeholder {
   color: var(--text-muted);
   font-style: italic;
+}
+
+/* Editor Footer */
+.editor-footer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #2d2d2d;
+  font-size: 12px;
+  color: #666;
+}
+
+.line-count, .char-count {
+  background: #2d2d2d;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.hint {
+  margin-left: auto;
+  color: #888;
 }
 
 .line-numbers {

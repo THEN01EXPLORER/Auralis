@@ -120,6 +120,76 @@ VULNERABILITY_PATTERNS = [
         "severity": "Medium",
         "description": "Unbounded loop detected, may cause out-of-gas errors.",
         "recommendation": "Consider limiting loop iterations or using pagination."
+    },
+    {
+        "name": "Unchecked Send",
+        "pattern": r"send\s*\([^)]+\)\s*;",
+        "severity": "High",
+        "description": "Return value of send() not checked. May silently fail.",
+        "recommendation": "Always check the return value: require(addr.send(amount), 'Send failed');"
+    },
+    {
+        "name": "Front-Running Vulnerability",
+        "pattern": r"(approve|swap|buy|sell|trade)\s*\(",
+        "severity": "Medium",
+        "description": "Function may be susceptible to front-running attacks.",
+        "recommendation": "Implement commit-reveal schemes or use private mempools."
+    },
+    {
+        "name": "Denial of Service",
+        "pattern": r"require\s*\([^)]*\.length|for\s*\([^)]*\.length",
+        "severity": "High",
+        "description": "Array length in loop may cause DoS via gas limit.",
+        "recommendation": "Limit array size or use pagination patterns."
+    },
+    {
+        "name": "Signature Replay",
+        "pattern": r"ecrecover\s*\(|signature|ECDSA",
+        "severity": "High",
+        "description": "Signature verification detected. May be vulnerable to replay attacks.",
+        "recommendation": "Include nonce and chain ID in signed messages to prevent replay."
+    },
+    {
+        "name": "Flash Loan Vulnerability",
+        "pattern": r"getReserves|price|oracle|swap.*\(",
+        "severity": "Critical",
+        "description": "Price-sensitive operation detected. May be vulnerable to flash loan attacks.",
+        "recommendation": "Use TWAP oracles and check for price manipulation."
+    },
+    {
+        "name": "Uninitialized Storage",
+        "pattern": r"struct\s+\w+\s*\{[^}]+\}\s*\w+\s*;",
+        "severity": "High",
+        "description": "Uninitialized storage pointer detected.",
+        "recommendation": "Always initialize storage variables explicitly."
+    },
+    {
+        "name": "Arbitrary Jump",
+        "pattern": r"assembly\s*\{[^}]*jump",
+        "severity": "Critical",
+        "description": "Arbitrary jump in assembly detected.",
+        "recommendation": "Avoid arbitrary jumps. Use high-level Solidity constructs."
+    },
+    {
+        "name": "Weak Randomness",
+        "pattern": r"block\.difficulty|blockhash|block\.number.*random|keccak256.*block",
+        "severity": "High",
+        "description": "Weak source of randomness detected. Can be predicted by miners.",
+        "recommendation": "Use Chainlink VRF or commit-reveal for randomness."
+    },
+    {
+        "name": "Missing Zero Check",
+        "pattern": r"address\s+\w+\s*[=;]|payable\s*\(\s*\w+\s*\)",
+        "severity": "Medium",
+        "description": "Address variable may not be checked for zero address.",
+        "recommendation": "Add require(addr != address(0)) checks."
+    },
+    {
+        "name": "Hardcoded Address",
+        "pattern": r"0x[a-fA-F0-9]{40}",
+        "severity": "Low",
+        "description": "Hardcoded address detected.",
+        "recommendation": "Consider using constructor parameters or admin functions for addresses."
     }
 ]
 
@@ -269,6 +339,218 @@ def get_stats():
             "avg_risk_score": 0,
             "detection_rate": 95
         }
+    }
+
+
+# Sample vulnerable contracts for demo
+SAMPLE_CONTRACTS = {
+    "reentrancy": {
+        "name": "Reentrancy Attack Demo",
+        "description": "Classic reentrancy vulnerability in a bank contract",
+        "code": """// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// VULNERABLE: Classic Reentrancy Attack
+contract VulnerableBank {
+    mapping(address => uint256) public balances;
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    // VULNERABLE: State change after external call
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        // External call BEFORE state update - VULNERABLE!
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        
+        // State update AFTER external call - TOO LATE!
+        balances[msg.sender] -= amount;
+    }
+    
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+}"""
+    },
+    "overflow": {
+        "name": "Integer Overflow Demo",
+        "description": "Integer overflow and underflow vulnerabilities",
+        "code": """// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.0;
+
+// VULNERABLE: No SafeMath in Solidity < 0.8
+contract VulnerableToken {
+    mapping(address => uint256) public balances;
+    uint256 public totalSupply;
+    
+    function mint(address to, uint256 amount) public {
+        // VULNERABLE: Can overflow
+        balances[to] += amount;
+        totalSupply += amount;
+    }
+    
+    function transfer(address to, uint256 amount) public {
+        // VULNERABLE: Can underflow if balance < amount
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+    
+    function batchMint(address[] memory recipients, uint256 amount) public {
+        for (uint i = 0; i < recipients.length; i++) {
+            // VULNERABLE: Unbounded loop + overflow risk
+            balances[recipients[i]] += amount;
+        }
+    }
+}"""
+    },
+    "access_control": {
+        "name": "Access Control Demo",
+        "description": "Missing access control and tx.origin issues",
+        "code": """// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// VULNERABLE: Multiple access control issues
+contract VulnerableVault {
+    address public owner;
+    mapping(address => uint256) public deposits;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    // VULNERABLE: tx.origin instead of msg.sender
+    modifier onlyOwner() {
+        require(tx.origin == owner, "Not owner");
+        _;
+    }
+    
+    function deposit() public payable {
+        deposits[msg.sender] += msg.value;
+    }
+    
+    // VULNERABLE: No access control!
+    function withdrawAll() public {
+        payable(msg.sender).transfer(address(this).balance);
+    }
+    
+    // VULNERABLE: Unprotected selfdestruct
+    function destroy() public {
+        selfdestruct(payable(owner));
+    }
+    
+    // VULNERABLE: Anyone can change owner
+    function changeOwner(address newOwner) public {
+        owner = newOwner;
+    }
+}"""
+    },
+    "flash_loan": {
+        "name": "Flash Loan Vulnerability Demo",
+        "description": "Price oracle manipulation vulnerability",
+        "code": """// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IUniswapPair {
+    function getReserves() external view returns (uint112, uint112, uint32);
+}
+
+// VULNERABLE: Flash loan attack vector
+contract VulnerableLending {
+    IUniswapPair public pair;
+    mapping(address => uint256) public deposits;
+    mapping(address => uint256) public borrowed;
+    
+    // VULNERABLE: Spot price from DEX can be manipulated
+    function getPrice() public view returns (uint256) {
+        (uint112 reserve0, uint112 reserve1,) = pair.getReserves();
+        return (reserve1 * 1e18) / reserve0; // Spot price!
+    }
+    
+    // VULNERABLE: Uses manipulable spot price
+    function borrow(uint256 collateralAmount) public {
+        uint256 price = getPrice();
+        uint256 borrowAmount = (collateralAmount * price) / 1e18;
+        
+        deposits[msg.sender] += collateralAmount;
+        borrowed[msg.sender] += borrowAmount;
+        
+        // Transfer borrowed amount...
+    }
+    
+    // Attacker can: Flash loan -> Manipulate price -> Borrow more -> Repay flash loan
+}"""
+    },
+    "randomness": {
+        "name": "Weak Randomness Demo",
+        "description": "Predictable randomness vulnerabilities",
+        "code": """// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+// VULNERABLE: Predictable randomness
+contract VulnerableLottery {
+    uint256 public ticketPrice = 0.1 ether;
+    address[] public players;
+    
+    function buyTicket() public payable {
+        require(msg.value == ticketPrice, "Wrong price");
+        players.push(msg.sender);
+    }
+    
+    // VULNERABLE: Miner can predict/manipulate
+    function pickWinner() public {
+        // Block values are known to miners!
+        uint256 random = uint256(keccak256(abi.encodePacked(
+            block.timestamp,
+            block.difficulty,
+            block.number,
+            players.length
+        )));
+        
+        uint256 winnerIndex = random % players.length;
+        address winner = players[winnerIndex];
+        
+        payable(winner).transfer(address(this).balance);
+        delete players;
+    }
+    
+    // Also vulnerable
+    function generateRandom() public view returns (uint256) {
+        return uint256(blockhash(block.number - 1)) % 100;
+    }
+}"""
+    }
+}
+
+
+@app.get("/api/v1/samples")
+def get_sample_contracts():
+    """Get list of sample vulnerable contracts for demo."""
+    samples = [
+        {
+            "id": key,
+            "name": value["name"],
+            "description": value["description"]
+        }
+        for key, value in SAMPLE_CONTRACTS.items()
+    ]
+    return {"samples": samples}
+
+
+@app.get("/api/v1/samples/{sample_id}")
+def get_sample_contract(sample_id: str):
+    """Get a specific sample contract."""
+    if sample_id not in SAMPLE_CONTRACTS:
+        raise HTTPException(status_code=404, detail="Sample not found")
+    
+    sample = SAMPLE_CONTRACTS[sample_id]
+    return {
+        "id": sample_id,
+        "name": sample["name"],
+        "description": sample["description"],
+        "code": sample["code"]
     }
 
 
