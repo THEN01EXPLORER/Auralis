@@ -10,7 +10,12 @@ import tempfile
 import shutil
 from pathlib import Path
 from contextlib import asynccontextmanager
-from git import Repo
+try:
+    from git import Repo
+    GIT_AVAILABLE = True
+except ImportError:
+    GIT_AVAILABLE = False
+    Repo = None
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -21,8 +26,14 @@ from app.utils.risk_calculator import calculate_risk_score
 from app.services.analyzer import VulnerabilityAnalyzer
 from app.services.bedrock_analyzer import BedrockAnalyzer
 from app.services.analysis_orchestrator import AnalysisOrchestrator
-from app.services.dread_scorer import DREADScorer
-from app.services.pdf_report_generator import PDFReportGenerator
+try:
+    from app.services.dread_scorer import DREADScorer
+    from app.services.pdf_report_generator import PDFReportGenerator
+    ADVANCED_FEATURES = True
+except ImportError:
+    ADVANCED_FEATURES = False
+    DREADScorer = None
+    PDFReportGenerator = None
 from app.models.contract import AnalyzeResponse
 
 # Configure logging with environment-based settings
@@ -363,6 +374,13 @@ async def analyze_repo(request: Request, repo_request: RepoRequest):
     each one using the hybrid analysis orchestrator. Returns a dictionary mapping
     filenames to their full analysis reports.
     """
+    # Check if git is available
+    if not GIT_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Repository scanning is not available in this deployment. GitPython dependency is not installed."
+        )
+    
     temp_dir = None
     request_start_time = time.time()
     
@@ -509,6 +527,12 @@ async def calculate_dread(request: Request, contract_request: ContractRequest):
     """
     Calculate DREAD risk scores for a contract
     """
+    if not ADVANCED_FEATURES:
+        raise HTTPException(
+            status_code=503,
+            detail="DREAD scoring is not available in this deployment."
+        )
+    
     try:
         # First analyze the contract
         analysis_result = await orchestrator.analyze_contract(contract_request.code)
@@ -547,6 +571,12 @@ async def generate_report(request: Request, contract_request: ContractRequest):
     """
     Generate a PDF audit report for a contract
     """
+    if not ADVANCED_FEATURES:
+        raise HTTPException(
+            status_code=503,
+            detail="PDF report generation is not available in this deployment."
+        )
+    
     try:
         # Analyze the contract
         analysis_result = await orchestrator.analyze_contract(contract_request.code)
@@ -607,42 +637,48 @@ async def generate_report(request: Request, contract_request: ContractRequest):
 @app.get("/api/v1/stats")
 def get_stats():
     """Get API statistics and system metrics."""
-    import psutil
     try:
+        import psutil
         cpu_percent = psutil.cpu_percent(interval=0.1)
         memory = psutil.virtual_memory()
         disk = psutil.disk_usage('/')
-        
-        # Get AI analyzer status
-        ai_available = orchestrator.ai_analyzer.available if orchestrator else False
-        
-        return {
-            "status": "operational",
-            "version": "1.0.0",
-            "uptime_seconds": int(time.time() - getattr(app.state, 'start_time', time.time())),
-            "system": {
-                "cpu_usage_percent": cpu_percent,
-                "memory_used_gb": round(memory.used / (1024**3), 2),
-                "memory_total_gb": round(memory.total / (1024**3), 2),
-                "memory_percent": memory.percent,
-                "disk_used_gb": round(disk.used / (1024**3), 2),
-                "disk_total_gb": round(disk.total / (1024**3), 2),
-                "disk_percent": disk.percent
-            },
-            "capabilities": {
-                "ai_analysis": ai_available,
-                "static_analysis": True,
-                "repo_scanning": True,
-                "pdf_reports": True,
-                "dread_scoring": True
-            },
-            "analysis": {
-                "total_scans": getattr(app.state, 'total_scans', 0),
-                "total_vulnerabilities": getattr(app.state, 'total_vulnerabilities', 0),
-                "avg_risk_score": getattr(app.state, 'avg_risk_score', 0),
-                "detection_rate": 95
-            }
+        system_info = {
+            "cpu_usage_percent": cpu_percent,
+            "memory_used_gb": round(memory.used / (1024**3), 2),
+            "memory_total_gb": round(memory.total / (1024**3), 2),
+            "memory_percent": memory.percent,
+            "disk_used_gb": round(disk.used / (1024**3), 2),
+            "disk_total_gb": round(disk.total / (1024**3), 2),
+            "disk_percent": disk.percent
         }
+    except ImportError:
+        system_info = {"available": False}
+    except Exception as e:
+        logger.error(f"System metrics error: {str(e)}")
+        system_info = {"available": False}
+    
+    # Get AI analyzer status
+    ai_available = orchestrator.ai_analyzer.available if orchestrator else False
+    
+    return {
+        "status": "operational",
+        "version": "1.0.0",
+        "uptime_seconds": int(time.time() - getattr(app.state, 'start_time', time.time())),
+        "system": system_info,
+        "capabilities": {
+            "ai_analysis": ai_available,
+            "static_analysis": True,
+            "repo_scanning": GIT_AVAILABLE,
+            "pdf_reports": ADVANCED_FEATURES,
+            "dread_scoring": ADVANCED_FEATURES
+        },
+        "analysis": {
+            "total_scans": getattr(app.state, 'total_scans', 0),
+            "total_vulnerabilities": getattr(app.state, 'total_vulnerabilities', 0),
+            "avg_risk_score": getattr(app.state, 'avg_risk_score', 0),
+            "detection_rate": 95
+        }
+    }
     except Exception as e:
         logger.error(f"Stats endpoint error: {str(e)}")
         return {
