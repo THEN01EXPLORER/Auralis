@@ -27,6 +27,27 @@
   min-width: auto;
 }
 
+/* Collapsed footer styles */
+.sidebar.collapsed .sidebar-footer {
+  padding: 12px 8px;
+}
+
+.sidebar.collapsed .social-links {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar.collapsed .social-link {
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar.collapsed .sidebar-actions {
+  justify-content: center;
+  padding: 8px 0;
+}
+
 .sidebar-header {
   padding: var(--spacing-xl);
   border-bottom: 1px solid var(--border-color);
@@ -182,33 +203,16 @@
   display: flex;
   justify-content: center;
   gap: 8px;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
-  margin-top: 8px;
+  width: 100%;
 }
 
 .sidebar-footer {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--border-color);
   margin-top: auto;
-}
-
-/* Collapsed state for footer */
-.sidebar.collapsed .sidebar-footer {
-  padding: var(--spacing-sm);
-}
-
-.sidebar.collapsed .social-links {
+  display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.sidebar.collapsed .social-link {
-  width: 32px;
-  height: 32px;
-}
-
-.sidebar.collapsed .version-info {
-  display: none;
+  align-items: center;
 }
 
 /* Social Links */
@@ -217,6 +221,7 @@
   justify-content: center;
   gap: 12px;
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .social-link {
@@ -248,10 +253,15 @@
   gap: 8px;
   font-size: 11px;
   color: var(--text-muted);
-  padding: 8px;
+  padding: 8px 12px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   margin-bottom: 12px;
+  width: auto;
+}
+
+.sidebar.collapsed .version-info {
+  display: none;
 }
 
 .version-info .dot {
