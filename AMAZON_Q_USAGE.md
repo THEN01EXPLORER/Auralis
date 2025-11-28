@@ -1,8 +1,14 @@
-# 🤖 Amazon Q Developer & Kiro IDE Usage Documentation
+# 🤖 Amazon Kiro IDE Usage Documentation
 
 > **AWS Global Vibe Hackathon 2025 - Tool Usage Proof**
 
-This document demonstrates how **Amazon Q Developer** and **Kiro IDE** were leveraged throughout the development of Auralis.
+This document demonstrates how **Amazon Kiro IDE** was leveraged throughout the development of Auralis. A **1-hour development recording** is available showing the complete development process.
+
+---
+
+## 📝 Key Highlight
+
+🎬 **1-Hour Kiro IDE Recording Available** - Full development session recorded showing spec-driven development in action.
 
 ---
 
@@ -19,23 +25,22 @@ This document demonstrates how **Amazon Q Developer** and **Kiro IDE** were leve
 
 ## 🛠️ Tools Used
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Amazon Q Developer** | VS Code Extension | Code generation, debugging, refactoring |
-| **GitHub Copilot with Claude** | Claude Opus 4.5 | AI pair programming |
-| **Kiro IDE** | Latest | Spec-driven development |
+| Tool | Purpose | Usage |
+|------|---------|-------|
+| **Amazon Kiro IDE** | Primary development environment | ⭐ PRIMARY - Full app built here |
+| **GitHub Copilot (Claude)** | AI pair programming | Secondary assistance |
 
 ---
 
-## 🔄 Development Workflow
+## 🔄 Development Workflow (All in Kiro IDE)
 
 ### Phase 1: Architecture & Planning
-- Used Amazon Q to brainstorm smart contract vulnerability patterns
+- Used Kiro's spec-driven development to plan the application
 - Generated initial API schema and endpoint structure
 - Created Pydantic models for request/response validation
 
 ### Phase 2: Backend Development
-- Amazon Q helped write FastAPI endpoints
+- Kiro helped write FastAPI endpoints
 - Generated regex patterns for vulnerability detection
 - Assisted with error handling and logging
 
@@ -44,10 +49,10 @@ This document demonstrates how **Amazon Q Developer** and **Kiro IDE** were leve
 - Created CSS animations and styling
 - Built export functionality for reports
 
-### Phase 4: Integration & Testing
-- Debugged CORS issues with Q suggestions
-- Generated test cases for vulnerability patterns
-- Fixed deployment configurations
+### Phase 4: Deployment
+- Configured Vercel for frontend
+- Set up Render.com for backend
+- Fixed CORS and environment issues
 
 ---
 
@@ -210,19 +215,21 @@ app.add_middleware(
 
 ---
 
-## 📸 Screenshots
+## 📸 Proof of Tool Usage
 
-> **Note:** Add your actual screenshots in the `/screenshots` folder showing:
-> 1. Amazon Q Developer helping write code in VS Code
-> 2. Q suggesting fixes or improvements
-> 3. Kiro IDE spec-driven development (if used)
-> 4. Q CLI commands (if used)
+### 🎬 Video Recording
 
-### Screenshot Locations Required:
-- [ ] `screenshots/amazon-q-code-generation.png`
-- [ ] `screenshots/amazon-q-debugging.png`
-- [ ] `screenshots/amazon-q-suggestions.png`
-- [ ] `screenshots/kiro-ide-usage.png` (if applicable)
+**1-Hour Kiro IDE Development Session Recorded** showing:
+1. Spec-driven development workflow
+2. Code generation in real-time
+3. Debugging and problem solving
+4. Full application being built from scratch
+
+### 📷 Screenshots Available
+Screenshots from the recording can be extracted showing:
+- Kiro IDE interface with code
+- AI assistance in action
+- Spec-driven development features
 
 ---
 
@@ -257,4 +264,4 @@ app.add_middleware(
 
 ---
 
-**Built with ❤️ using Amazon Q Developer for AWS Global Vibe Hackathon 2025**
+**Built with ❤️ using Amazon Kiro IDE for AWS Global Vibe Hackathon 2025**

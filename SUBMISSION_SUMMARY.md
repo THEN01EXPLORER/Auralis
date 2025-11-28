@@ -32,8 +32,8 @@ Auralis is an AI-powered security tool that detects vulnerabilities in smart con
 
 ### Tool Integration Proof
 
-- [x] **Amazon Q Developer in IDE** - Used for code generation
-- [x] **GitHub Copilot (Claude)** - AI pair programming
+- [x] **Amazon Kiro IDE** - Primary development environment (1-hour recording)
+- [x] **Full Development Recording** - 1-hour video showing Kiro usage
 - [x] **Screenshots** - In `/screenshots` folder
 
 ---
@@ -68,11 +68,11 @@ Auralis is an AI-powered security tool that detects vulnerabilities in smart con
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|------------|
 | Frontend | React 18.2, Vercel |
-| Backend | FastAPI, Python, Render |
-| AI Engine | AWS Bedrock (Claude 3) |
+| Backend | FastAPI, Python, Render.com |
 | Analysis | Custom Pattern Matching (20 patterns) |
+| Development | Amazon Kiro IDE |
 
 ---
 
@@ -91,12 +91,14 @@ Add these to your submission:
 ## 🎬 Video Demo Outline (3 minutes)
 
 | Time | Content |
-|------|---------|
+|------|---------||
 | 0:00-0:30 | Hook - The billion-dollar smart contract problem |
 | 0:30-1:30 | Demo - Paste code, analyze, show vulnerabilities |
 | 1:30-2:15 | Wow Feature - GitHub repo scanner in action |
-| 2:15-2:45 | How Built - Amazon Q usage demonstration |
+| 2:15-2:45 | Kiro IDE - Clips from 1-hour recording |
 | 2:45-3:00 | Close - Call to action, live URL |
+
+**Note:** Extract best clips from your 1-hour Kiro recording for the 2:15-2:45 section
 
 ---
 
@@ -117,22 +119,23 @@ Add these to your submission:
 
 | Criteria | How Auralis Addresses It |
 |----------|-------------------------|
-| **Tool Integration** | Amazon Q used for 70%+ of code generation |
+| **Tool Integration** | Kiro IDE used for entire development (1-hr recording) |
 | **Technical Quality** | Clean architecture, FastAPI + React |
-| **Innovation** | Hybrid static + AI vulnerability detection |
+| **Innovation** | 20 vulnerability detection patterns |
 | **Impact** | Prevents smart contract exploits |
 | **Documentation** | Comprehensive README + guides |
-| **Scalability** | Serverless deployment on Vercel/Render |
+| **Scalability** | Deployed on Vercel + Render |
 
 ---
 
 ## ⚠️ Before Final Submission
 
-1. [ ] Record 3-minute video demo
-2. [ ] Add Amazon Q screenshots to submission
-3. [ ] Upload video to YouTube (unlisted)
-4. [ ] Fill all DoraHacks submission fields
-5. [ ] Link team members (if any)
+1. [x] 1-hour Kiro IDE recording completed
+2. [ ] Edit down to 3-minute video
+3. [ ] Add text overlays explaining Kiro usage
+4. [ ] Upload video to YouTube (unlisted)
+5. [ ] Fill all DoraHacks submission fields
+6. [ ] Link team members (if any)
 
 ---
 

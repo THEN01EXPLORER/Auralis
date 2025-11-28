@@ -1,58 +1,87 @@
 # 🎬 Auralis Video Demo Guide
 
-Quick guide to record a 3-minute demo video.
+Quick guide to create your 3-minute submission video from your 1-hour Kiro recording.
 
-## Pre-Recording Setup
-- [ ] Backend running on port 8000
-- [ ] Frontend running on port 3000
-- [ ] Demo contract ready (demo-contracts/VulnerableBank.sol)
-- [ ] GitHub demo repo URL ready
-- [ ] Screen recording software installed (OBS Studio or Windows Game Bar)
+## 📹 You Have
 
-## Demo Script (3 minutes)
+- [x] 1-hour Kiro IDE development recording
+- [ ] 3-minute edited highlight video (to create)
+
+## 🎯 Video Structure (3 minutes)
 
 ### [0:00-0:30] Hook & Problem
-**Show:** News about smart contract hacks
-**Say:** "Smart contracts secure billions, but one vulnerability can cost millions. Traditional audits are slow and expensive."
+**Show:** Smart contract hack news or stats
+**Text Overlay:** "Billions lost to smart contract hacks"
 
-### [0:30-1:30] Solution & Single Contract Demo
-**Show:** Auralis interface
-**Say:** "Auralis combines static analysis with AWS Bedrock AI."
+### [0:30-1:30] Live Demo
+**Show:** Auralis app at https://auralis-tawny.vercel.app
 **Do:** 
-1. Paste vulnerable contract
+1. Paste a vulnerable contract
 2. Click "Analyze Contract"
-3. Show results with risk scores
-4. Click "Show Fix" to reveal remediation
+3. Show results with severity badges
+4. Show export feature
 
-### [1:30-2:30] Repository Scanner (Wow Feature)
-**Show:** Repository scanner section
-**Say:** "Analyze entire GitHub repositories at once."
+### [1:30-2:15] Wow Feature - Repo Scanner
+**Show:** GitHub repository analysis
 **Do:**
-1. Paste GitHub URL
+1. Paste a GitHub URL
 2. Click "Analyze Repo"
-3. Show tabbed results
-4. Click through 2-3 file tabs
+3. Show tabbed results for multiple files
 
-### [2:30-3:00] Close
-**Show:** Architecture or results
-**Say:** "Built on AWS Bedrock, Lambda, and Amplify. Try it at [your-url]."
+### [2:15-2:45] Kiro IDE Usage (from your 1-hour recording)
+**Extract clips showing:**
+- Kiro IDE interface
+- Code being generated
+- You building the app
 
-## Recording Tips
-- Use 1920x1080 resolution, 30fps
-- Clear audio with good microphone
-- Practice 2-3 times before recording
-- Record multiple takes, pick the best
+**Text Overlay:** "Built with Amazon Kiro IDE"
 
-## Editing Checklist
-- [ ] Add title card (0:00-0:03)
-- [ ] Add end card with URL (2:57-3:00)
-- [ ] Add subtle background music (optional)
-- [ ] Export as MP4, 1080p
-- [ ] Upload to YouTube
+### [2:45-3:00] Close
+**Show:** Live URL
+**Text Overlay:** "Try it: auralis-tawny.vercel.app"
 
-## Demo Repository
-Create a small test repo with 2-3 vulnerable contracts, or use:
-- OpenZeppelin contracts
-- Your own test repo (recommended for control)
+---
 
-For detailed instructions, see original video guides in git history.
+## ✂️ Editing Tips
+
+### From 1-Hour to 3 Minutes:
+
+1. **Watch your recording** - Note timestamps of best moments
+2. **Extract 3-4 clips** (10-15 seconds each) showing:
+   - Kiro helping you code
+   - Generating components
+   - Any "wow" moments
+3. **Add these clips** at 2:15-2:45 in your video
+
+### Text Overlays to Add:
+
+| Time | Text |
+|------|------|
+| 0:00 | "Auralis - Smart Contract Security" |
+| 0:30 | "20 Vulnerability Patterns" |
+| 1:30 | "Analyze Entire Repositories" |
+| 2:15 | "Built with Amazon Kiro IDE" |
+| 2:50 | "auralis-tawny.vercel.app" |
+
+### Free Video Editors:
+
+- **CapCut** (easiest, free) - capcut.com
+- **DaVinci Resolve** (professional, free)
+- **Windows Video Editor** (built-in)
+
+---
+
+## ✅ Export Settings
+
+- **Resolution:** 1920x1080 (1080p)
+- **Frame Rate:** 30fps
+- **Format:** MP4
+- **Duration:** Under 3 minutes
+
+---
+
+## 📤 Upload
+
+1. Upload to **YouTube** (unlisted is fine)
+2. Copy the share link
+3. Add to your DoraHacks submission

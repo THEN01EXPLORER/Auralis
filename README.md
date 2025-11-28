@@ -1,10 +1,12 @@
 # 🛡️ Auralis
 
-> An AI-powered security auditor for smart contracts, built for the AWS Global Vibe Hackathon.
+> An AI-powered security auditor for smart contracts, built for the AWS Global Vibe Hackathon 2025.
 
-[![AWS Bedrock](https://img.shields.io/badge/AWS-Bedrock-FF9900?logo=amazon-aws)](https://aws.amazon.com/bedrock/)
+[![Amazon Kiro](https://img.shields.io/badge/Built%20with-Amazon%20Kiro-FF9900?logo=amazon-aws)](https://kiro.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://vercel.com/)
+[![Render](https://img.shields.io/badge/Backend-Render-46E3B7?logo=render)](https://render.com/)
 
 ---
 
@@ -18,46 +20,46 @@
 
 ## 🎯 What is Auralis?
 
-Auralis is a next-generation smart contract security auditor that combines traditional static analysis with AI-powered semantic understanding. Built specifically for the AWS Global Vibe Hackathon, it demonstrates how AWS Bedrock can revolutionize blockchain security by detecting vulnerabilities that traditional tools miss.
+Auralis is a smart contract security auditor that uses pattern-based static analysis to detect vulnerabilities in Solidity code. Built for the AWS Global Vibe Hackathon 2025 using **Amazon Kiro IDE**.
 
-**The Problem:** Billions of dollars are lost annually to smart contract exploits. Traditional static analyzers catch obvious bugs but miss complex logic flaws and business logic vulnerabilities.
+**The Problem:** Billions of dollars are lost annually to smart contract exploits. Traditional audits are slow, expensive, and often miss critical vulnerabilities.
 
-**The Solution:** Auralis uses a hybrid analysis engine that combines pattern-matching with AWS Bedrock's Claude 3 Sonnet model to provide comprehensive security audits with AI-generated remediation code.
+**The Solution:** Auralis provides instant security analysis with 20 vulnerability detection patterns, exportable reports, and actionable remediation suggestions.
 
 ---
 
 ## ✨ Features
 
-### 🔄 Hybrid Analysis Engine
-Combines static pattern-matching with AI-powered semantic analysis from AWS Bedrock. When AI is available, vulnerabilities are cross-validated and enriched with context-aware insights.
+### 🔍 20 Vulnerability Detection Patterns
+Detects critical smart contract vulnerabilities including reentrancy, integer overflow, front-running, flash loan attacks, and more.
 
-### 📦 Automated Repo Scanner
+### 📦 GitHub Repository Scanner
 Analyze an entire GitHub repository with one click. Auralis clones the repo, finds all Solidity files, and provides a comprehensive security report for each contract.
 
-### 🔧 Smart Remediation
-Every vulnerability includes:
-- **AI-generated explanations** of why it's dangerous
-- **Working code examples** showing how to fix it
-- **Confidence scores** indicating detection reliability
-- **Source attribution** (Static, AI, or Hybrid)
+### 📤 Export Reports
+Download analysis results in multiple formats:
+- **JSON** - For programmatic use
+- **Markdown** - For documentation
+- **Plain Text** - For quick sharing
 
 ### 🎨 Professional UI
-- **Empty State:** Clean welcome screen with feature highlights
-- **Success State:** Comprehensive vulnerability reports with expandable details
-- **Error State:** Graceful error handling with helpful troubleshooting hints
-- **Multi-File View:** Tabbed interface for repository analysis with aggregate statistics
+- **Dark/Light Mode** - Toggle between themes
+- **Sample Contracts** - Pre-loaded vulnerable contracts for testing
+- **Keyboard Shortcuts** - Ctrl+Enter to analyze
+- **Severity Badges** - Color-coded vulnerability levels
 
 ---
 
 ## 🏗️ Tech Stack
 
 | Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Frontend** | React + Vite | Modern, fast UI with code editor |
+|-------|-----------|---------||
+| **Frontend** | React 18.2 | Modern UI with code editor |
 | **Backend** | FastAPI + Python | High-performance async API |
-| **AI Engine** | AWS Bedrock (Claude 3 Sonnet) | Semantic vulnerability analysis |
-| **Static Analysis** | Custom Pattern Matcher | Fast, reliable vulnerability detection |
-| **Deployment** | AWS Lambda + API Gateway + Amplify | Serverless, scalable infrastructure |
+| **Static Analysis** | Custom Pattern Matcher | 20 vulnerability detection patterns |
+| **Frontend Hosting** | Vercel | Fast, global CDN deployment |
+| **Backend Hosting** | Render.com | Managed Python server |
+| **AI Development** | Amazon Kiro IDE | Spec-driven development |
 | **Version Control** | Git + GitHub | Repository scanning and source control |
 
 ---
@@ -143,15 +145,17 @@ Auralis is an AI-powered tool that bolsters smart contract security by detecting
 
 **Auralis was built from scratch for the AWS Global Vibe Hackathon 2025.**
 
-### 🤖 Amazon Q Developer Usage
+### 🤖 Amazon Kiro IDE Usage
 
-Development was heavily accelerated by **Amazon Q Developer** and **GitHub Copilot (Claude)**, which were used for:
+The entire development was done using **Amazon Kiro IDE** with spec-driven development:
+- ✅ Full application built inside Kiro IDE
 - ✅ Code generation (React components, FastAPI endpoints)
 - ✅ Vulnerability pattern creation (20 detection patterns)
 - ✅ Debugging and error resolution
 - ✅ CSS styling and theme system
-- ✅ Documentation writing
 - ✅ Export functionality implementation
+
+🎬 **1-Hour Kiro Development Recording Available**
 
 📖 **Detailed Tool Usage:** [`AMAZON_Q_USAGE.md`](./AMAZON_Q_USAGE.md)
 
@@ -164,31 +168,26 @@ Development was heavily accelerated by **Amazon Q Developer** and **GitHub Copil
 ```
 ┌─────────────────┐
 │  React Frontend │
-│   (Amplify)     │
+│    (VERCEL)     │
 └────────┬────────┘
          │ HTTPS
          ▼
 ┌─────────────────┐
-│  API Gateway    │
+│  FastAPI Backend│
+│  (RENDER.COM)   │
 └────────┬────────┘
-         │
-         ▼
-┌─────────────────┐      ┌──────────────────┐
-│  Lambda/FastAPI │─────▶│  AWS Bedrock     │
-│  (Orchestrator) │      │  (Claude 3)      │
-└────────┬────────┘      └──────────────────┘
          │
          ▼
 ┌─────────────────┐
 │ Static Analyzer │
-│ (Pattern Match) │
+│ (20 Patterns)   │
 └─────────────────┘
 ```
 
 **Key Design Decisions:**
-- **Hybrid Analysis:** Static analysis runs first (fast), AI enriches results (smart)
-- **Graceful Degradation:** If AI fails, static results are still returned
-- **Serverless:** Zero infrastructure management, infinite scalability
+- **Pattern-Based Analysis:** 20 regex patterns for common vulnerabilities
+- **Real-time Detection:** Instant analysis with detailed reports
+- **Export Options:** JSON, Markdown, and Plain Text formats
 - **Async Processing:** FastAPI handles concurrent requests efficiently
 
 Detailed architecture documentation: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
@@ -215,28 +214,27 @@ See [`TEST_GUIDE.md`](./TEST_GUIDE.md) for comprehensive testing instructions.
 
 ## 🚀 Deployment
 
-### Deploy Backend to AWS Lambda
-```bash
-cd backend
-pip install -r requirements.txt -t package/
-cd package && zip -r ../deployment.zip . && cd ..
-zip -g deployment.zip main.py app/
+### Current Deployment
 
-aws lambda update-function-code \
-  --function-name auralis-api \
-  --zip-file fileb://deployment.zip
-```
+| Component | Platform | URL |
+|-----------|----------|-----|
+| **Frontend** | Vercel | https://auralis-tawny.vercel.app |
+| **Backend** | Render.com | https://auralis-1-doxn.onrender.com |
 
-### Deploy Frontend to AWS Amplify
-```bash
-cd frontend
-npm run build
+### Deploy Your Own
 
-# Connect your GitHub repo to Amplify Console
-# Amplify will auto-deploy on every push to main
-```
+**Frontend (Vercel):**
+1. Fork this repository
+2. Connect to Vercel
+3. Set `REACT_APP_API_URL` environment variable
+4. Deploy
 
-**Full deployment guide:** [`DEPLOYMENT_GUIDE.md`](./DEPLOYMENT_GUIDE.md)
+**Backend (Render):**
+1. Create a new Web Service on Render
+2. Connect to your GitHub repository
+3. Set build command: `pip install -r requirements.txt`
+4. Set start command: `gunicorn main_minimal:app`
+5. Deploy
 
 ---
 
@@ -287,20 +285,30 @@ Auralis/
 
 ## 🔐 Security Vulnerabilities Detected
 
-Auralis can detect:
+Auralis detects **20 vulnerability patterns**:
 
-| Vulnerability Type | Severity | Detection Method |
-|-------------------|----------|------------------|
-| Re-entrancy Attacks | Critical | Static + AI |
-| Integer Overflow/Underflow | High | Static + AI |
-| Unchecked External Calls | High | Static + AI |
-| Access Control Issues | High | Static + AI |
-| Timestamp Dependence | Medium | Static + AI |
-| Uninitialized Storage | Medium | Static |
-| Gas Limit Issues | Medium | AI |
-| Business Logic Flaws | Variable | AI |
-| Denial of Service | Medium | Static + AI |
-| Front-Running Vulnerabilities | Medium | AI |
+| Vulnerability Type | Severity |
+|-------------------|----------|
+| Re-entrancy Attacks | Critical |
+| Integer Overflow/Underflow | High |
+| Unchecked External Calls | High |
+| Access Control Issues | High |
+| Timestamp Dependence | Medium |
+| Uninitialized Storage | Medium |
+| Front-Running | Medium |
+| Flash Loan Attacks | High |
+| Denial of Service | Medium |
+| Signature Replay | High |
+| Weak Randomness | Medium |
+| Missing Zero Address Check | Low |
+| Hardcoded Addresses | Low |
+| Arbitrary Jump | Critical |
+| tx.origin Authentication | High |
+| Delegatecall Injection | Critical |
+| Self-destruct | High |
+| Floating Pragma | Low |
+| Unchecked Return Values | Medium |
+| Gas Limit Issues | Medium |
 
 ---
 
@@ -318,8 +326,9 @@ See [`LICENSE`](./LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- **AWS Bedrock Team** - For providing access to Claude 3 Sonnet
-- **Amazon Q & Kiro IDE** - For accelerating development by 10x
+- **Amazon Kiro IDE** - For spec-driven development and AI assistance
+- **Vercel** - For frontend hosting
+- **Render.com** - For backend hosting
 - **FastAPI Community** - For the excellent async framework
 - **React Team** - For the powerful UI library
 
@@ -335,6 +344,6 @@ Built with ❤️ for the AWS Global Vibe Hackathon
 
 <div align="center">
 
-**⚡ Powered by AWS Bedrock | Built with Amazon Q | Deployed on AWS Lambda ⚡**
+**⚡ Built with Amazon Kiro IDE | Deployed on Vercel + Render ⚡**
 
 </div>
