@@ -580,10 +580,12 @@ def get_supported_patterns():
 @app.post("/api/v1/analyze_repo")
 def analyze_repo(request: RepoRequest):
     """Analyze all Solidity files in a GitHub repository."""
-    import subprocess
     import tempfile
     import shutil
+    import zipfile
+    import io
     from pathlib import Path
+    from urllib.request import urlopen
     
     github_url = request.github_url.strip()
     
@@ -594,24 +596,37 @@ def analyze_repo(request: RepoRequest):
             detail="Invalid GitHub URL. Must start with https://github.com/"
         )
     
+    # Convert GitHub URL to archive download URL
+    # https://github.com/owner/repo -> https://github.com/owner/repo/archive/refs/heads/main.zip
+    if github_url.endswith('/'):
+        github_url = github_url[:-1]
+    
+    zip_url = f"{github_url}/archive/refs/heads/main.zip"
+    
     # Create temporary directory
     temp_dir = tempfile.mkdtemp()
     start_time = time.time()
     
     try:
-        # Clone repository
-        clone_result = subprocess.run(
-            ["git", "clone", "--depth", "1", github_url, temp_dir],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
+        # Download repository as ZIP
+        try:
+            response = urlopen(zip_url, timeout=30)
+            zip_data = response.read()
+        except Exception as e:
+            # Try 'master' branch if 'main' fails
+            zip_url = f"{github_url}/archive/refs/heads/master.zip"
+            try:
+                response = urlopen(zip_url, timeout=30)
+                zip_data = response.read()
+            except:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Failed to download repository. Check URL or repository visibility."
+                )
         
-        if clone_result.returncode != 0:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Failed to clone repository: {clone_result.stderr}"
-            )
+        # Extract ZIP
+        with zipfile.ZipFile(io.BytesIO(zip_data)) as zip_ref:
+            zip_ref.extractall(temp_dir)
         
         # Find all .sol files
         sol_files = list(Path(temp_dir).rglob("*.sol"))
@@ -660,11 +675,8 @@ def analyze_repo(request: RepoRequest):
             "results": results
         }
         
-    except subprocess.TimeoutExpired:
-        raise HTTPException(
-            status_code=408,
-            detail="Repository cloning timed out. Repository may be too large."
-        )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=500,
