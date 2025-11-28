@@ -41,6 +41,9 @@ app.add_middleware(
 class ContractRequest(BaseModel):
     code: str
 
+class RepoRequest(BaseModel):
+    github_url: str
+
 class Vulnerability(BaseModel):
     type: str
     line: int
@@ -572,6 +575,107 @@ def get_supported_patterns():
         "patterns": patterns,
         "categories": ["Security"]
     }
+
+
+@app.post("/api/v1/analyze_repo")
+def analyze_repo(request: RepoRequest):
+    """Analyze all Solidity files in a GitHub repository."""
+    import subprocess
+    import tempfile
+    import shutil
+    from pathlib import Path
+    
+    github_url = request.github_url.strip()
+    
+    # Validate GitHub URL
+    if not github_url.startswith("https://github.com/"):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid GitHub URL. Must start with https://github.com/"
+        )
+    
+    # Create temporary directory
+    temp_dir = tempfile.mkdtemp()
+    start_time = time.time()
+    
+    try:
+        # Clone repository
+        clone_result = subprocess.run(
+            ["git", "clone", "--depth", "1", github_url, temp_dir],
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+        
+        if clone_result.returncode != 0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to clone repository: {clone_result.stderr}"
+            )
+        
+        # Find all .sol files
+        sol_files = list(Path(temp_dir).rglob("*.sol"))
+        
+        # Filter out common directories
+        excluded_dirs = {"node_modules", ".git", "test", "tests", "mock"}
+        sol_files = [
+            f for f in sol_files
+            if not any(excluded in f.parts for excluded in excluded_dirs)
+        ]
+        
+        if not sol_files:
+            raise HTTPException(
+                status_code=404,
+                detail="No Solidity files found in repository"
+            )
+        
+        # Analyze each file
+        results = {}
+        total_vulns = 0
+        
+        for sol_file in sol_files[:10]:  # Limit to 10 files for free tier
+            try:
+                code = sol_file.read_text(encoding='utf-8')
+                
+                # Analyze using existing function
+                analysis = analyze_contract(ContractRequest(code=code))
+                results[sol_file.name] = analysis
+                total_vulns += len(analysis.get("vulnerabilities", []))
+                
+            except Exception as e:
+                results[sol_file.name] = {
+                    "error": str(e),
+                    "analysis_id": str(uuid.uuid4()),
+                    "timestamp": datetime.now().isoformat(),
+                    "vulnerabilities": []
+                }
+        
+        processing_time = int((time.time() - start_time) * 1000)
+        
+        return {
+            "repository_url": github_url,
+            "files_analyzed": len(results),
+            "total_vulnerabilities": total_vulns,
+            "processing_time_ms": processing_time,
+            "results": results
+        }
+        
+    except subprocess.TimeoutExpired:
+        raise HTTPException(
+            status_code=408,
+            detail="Repository cloning timed out. Repository may be too large."
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error analyzing repository: {str(e)}"
+        )
+    finally:
+        # Cleanup
+        try:
+            shutil.rmtree(temp_dir)
+        except:
+            pass
 
 
 # Export Request Model
