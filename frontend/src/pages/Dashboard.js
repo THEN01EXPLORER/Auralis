@@ -158,7 +158,7 @@ function Dashboard() {
         <div className="dashboard-card recent-activity-card">
           <div className="card-header">
             <h3>📈 Recent Activity</h3>
-            <button className="view-all-btn">View All</button>
+            <button className="view-all-btn" onClick={() => navigate('/history')}>View All</button>
           </div>
           <div className="activity-list">
             {recentScans.map(scan => (
@@ -240,7 +240,7 @@ function Dashboard() {
                 <span className="action-desc">Analyze contract</span>
               </div>
             </button>
-            <button className="action-btn secondary">
+            <button className="action-btn secondary" onClick={() => navigate('/reports')}>
               <div className="action-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2"/>
@@ -252,7 +252,7 @@ function Dashboard() {
                 <span className="action-desc">Detailed analysis</span>
               </div>
             </button>
-            <button className="action-btn secondary">
+            <button className="action-btn secondary" onClick={() => navigate('/history')}>
               <div className="action-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2"/>
@@ -263,7 +263,7 @@ function Dashboard() {
                 <span className="action-desc">Past scans</span>
               </div>
             </button>
-            <button className="action-btn secondary">
+            <button className="action-btn secondary" onClick={() => navigate('/settings')}>
               <div className="action-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
