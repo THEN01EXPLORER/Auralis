@@ -609,20 +609,27 @@ def analyze_repo(request: RepoRequest):
     
     try:
         # Download repository as ZIP
-        try:
-            response = urlopen(zip_url, timeout=30)
-            zip_data = response.read()
-        except Exception as e:
-            # Try 'master' branch if 'main' fails
-            zip_url = f"{github_url}/archive/refs/heads/master.zip"
+        zip_data = None
+        download_error = None
+        
+        # Try common branch names
+        branches = ["main", "master", "develop", "dev"]
+        
+        for branch in branches:
             try:
+                zip_url = f"{github_url}/archive/refs/heads/{branch}.zip"
                 response = urlopen(zip_url, timeout=30)
                 zip_data = response.read()
-            except:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Failed to download repository. Check URL or repository visibility."
-                )
+                break # Success!
+            except Exception as e:
+                download_error = e
+                continue
+        
+        if zip_data is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to download repository. Tried branches: {', '.join(branches)}. Check URL or repository visibility."
+            )
         
         # Extract ZIP
         with zipfile.ZipFile(io.BytesIO(zip_data)) as zip_ref:
@@ -632,7 +639,10 @@ def analyze_repo(request: RepoRequest):
         all_sol_files = list(Path(temp_dir).rglob("*.sol"))
         
         # Filter out common directories
-        excluded_dirs = {"node_modules", ".git", "test", "tests", "mock", "mocks"}
+        excluded_dirs = {"node_modules", ".git"}
+        # We're less strict with test folders now, as some repos put contracts there
+        # But we still want to avoid node_modules
+        
         sol_files = [
             f for f in all_sol_files
             if not any(excluded in f.parts for excluded in excluded_dirs)
@@ -661,9 +671,9 @@ def analyze_repo(request: RepoRequest):
                 code = sol_file.read_text(encoding='utf-8')
                 
                 # Analyze using existing function
-                analysis = analyze_contract(ContractRequest(code=code))
+                analysis = analyze_contract(code)
                 results[sol_file.name] = analysis
-                total_vulns += len(analysis.get("vulnerabilities", []))
+                total_vulns += len(analysis)
                 
             except Exception as e:
                 results[sol_file.name] = {
