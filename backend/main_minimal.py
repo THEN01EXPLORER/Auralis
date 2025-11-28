@@ -629,20 +629,28 @@ def analyze_repo(request: RepoRequest):
             zip_ref.extractall(temp_dir)
         
         # Find all .sol files
-        sol_files = list(Path(temp_dir).rglob("*.sol"))
+        all_sol_files = list(Path(temp_dir).rglob("*.sol"))
         
         # Filter out common directories
-        excluded_dirs = {"node_modules", ".git", "test", "tests", "mock"}
+        excluded_dirs = {"node_modules", ".git", "test", "tests", "mock", "mocks"}
         sol_files = [
-            f for f in sol_files
+            f for f in all_sol_files
             if not any(excluded in f.parts for excluded in excluded_dirs)
         ]
         
         if not sol_files:
-            raise HTTPException(
-                status_code=404,
-                detail="No Solidity files found in repository"
-            )
+            # Provide helpful error message
+            if all_sol_files:
+                excluded_count = len(all_sol_files) - len(sol_files)
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Found {len(all_sol_files)} Solidity files, but all are in test/mock directories. Try a repository with contracts in src/ or contracts/ folders."
+                )
+            else:
+                raise HTTPException(
+                    status_code=404,
+                    detail="No Solidity (.sol) files found in repository. Make sure the repository contains Solidity smart contracts."
+                )
         
         # Analyze each file
         results = {}
