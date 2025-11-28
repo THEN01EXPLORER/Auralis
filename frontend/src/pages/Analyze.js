@@ -93,11 +93,12 @@ const Analyze = memo(function Analyze() {
     setProgress(0);
     setAnalysisMode('repo');
     
+    let progressInterval;
     try {
       toast.info('Cloning repository...');
       setProgress(20);
       
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 85) {
             clearInterval(progressInterval);
@@ -120,9 +121,11 @@ const Analyze = memo(function Analyze() {
       
       setTimeout(() => setProgress(null), 1000);
     } catch (error) {
-      setError(error.message || 'Failed to analyze repository');
-      toast.error(error.message || 'Repository analysis failed. Please check the URL and try again.');
+      console.error('Repo analysis error:', error);
+      setError(typeof error === 'string' ? error : error.message || 'Failed to analyze repository');
+      toast.error(typeof error === 'string' ? error : error.message || 'Repository analysis failed. Please check the URL and try again.');
     } finally {
+      if (progressInterval) clearInterval(progressInterval);
       setLoading(false);
     }
   }, [repoUrl, toast]);
