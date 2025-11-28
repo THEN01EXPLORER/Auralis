@@ -6,7 +6,6 @@ function Settings() {
     notifications: true,
     autoScan: false,
     darkMode: true,
-    apiKey: '••••••••••••••••',
   });
 
   // Load settings from localStorage on mount
@@ -28,29 +27,6 @@ function Settings() {
 
   const handleSelectChange = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleRegenerateApiKey = () => {
-    const confirmRegenerate = window.confirm(
-      'Are you sure you want to regenerate your API key? Your old key will stop working.'
-    );
-    
-    if (confirmRegenerate) {
-      // Generate a random API key (in production, this would be a server call)
-      const newKey = 'ak_' + Array.from({length: 32}, () => 
-        '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'[Math.floor(Math.random() * 62)]
-      ).join('');
-      
-      setSettings(prev => ({ ...prev, apiKey: newKey }));
-      
-      // Show the key temporarily
-      alert(`New API Key generated:\n\n${newKey}\n\nPlease save this key securely. It will be hidden after you close this dialog.`);
-      
-      // Hide it after 5 seconds
-      setTimeout(() => {
-        setSettings(prev => ({ ...prev, apiKey: '••••••••••••••••' }));
-      }, 5000);
-    }
   };
 
   return (
@@ -110,27 +86,6 @@ function Settings() {
               <span className="toggle-slider"></span>
             </label>
           </div>
-        </div>
-
-        <div className="settings-card">
-          <h3>🔑 API Configuration</h3>
-          
-          <div className="setting-item">
-            <div className="setting-info">
-              <div className="setting-title">API Key</div>
-              <div className="setting-description">Your Auralis API key</div>
-            </div>
-            <input 
-              type="password" 
-              value={settings.apiKey}
-              className="api-input"
-              readOnly
-            />
-          </div>
-
-          <button className="regenerate-btn" onClick={handleRegenerateApiKey}>
-            ⚠️ Regenerate API Key
-          </button>
         </div>
 
         <div className="settings-card">
