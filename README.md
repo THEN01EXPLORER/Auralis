@@ -10,7 +10,9 @@
 
 ## 🌐 Live Demo
 
-**[YOUR_LIVE_AMPLIFY_URL_GOES_HERE]**
+🔗 **Frontend:** [https://auralis-tawny.vercel.app](https://auralis-tawny.vercel.app)
+
+🔗 **Backend API:** [https://auralis-1-doxn.onrender.com](https://auralis-1-doxn.onrender.com)
 
 ---
 
@@ -120,7 +122,7 @@ Frontend runs on `http://localhost:3000`
 
 ## 🎬 Demo Video Script
 
-A complete 3-minute demo video script is available in [`VIDEO_SCRIPT.md`](./VIDEO_SCRIPT.md), including:
+A complete 3-minute demo video script is available in [`VIDEO_GUIDE.md`](./VIDEO_GUIDE.md), including:
 - The Hook (0:00 - 0:30): The billion-dollar problem
 - The Solution (0:30 - 1:30): Live demo of single contract analysis
 - The "Wow" Feature (1:30 - 2:00): Repository scanner in action
@@ -129,18 +131,31 @@ A complete 3-minute demo video script is available in [`VIDEO_SCRIPT.md`](./VIDE
 
 ---
 
+## 🎯 Hackathon Track
+
+**🔒 AI Cybersecurity & Privacy**
+
+Auralis is an AI-powered tool that bolsters smart contract security by detecting vulnerabilities, preventing exploits, and protecting blockchain assets worth billions of dollars.
+
+---
+
 ## 🏆 Hackathon Proof of Work
 
-**Auralis was built from scratch in 30 days for the AWS Global Vibe Hackathon.**
+**Auralis was built from scratch for the AWS Global Vibe Hackathon 2025.**
 
-Its development was heavily accelerated by **Amazon Q** and **Kiro IDE**, which were used for:
-- ✅ Code generation and refactoring
+### 🤖 Amazon Q Developer Usage
+
+Development was heavily accelerated by **Amazon Q Developer** and **GitHub Copilot (Claude)**, which were used for:
+- ✅ Code generation (React components, FastAPI endpoints)
+- ✅ Vulnerability pattern creation (20 detection patterns)
 - ✅ Debugging and error resolution
+- ✅ CSS styling and theme system
 - ✅ Documentation writing
-- ✅ Automated backend development
-- ✅ Test suite creation
+- ✅ Export functionality implementation
 
-**Full development journal with timestamps, commits, and evidence:** [`HACKATHON_JOURNAL.md`](./HACKATHON_JOURNAL.md)
+📖 **Detailed Tool Usage:** [`AMAZON_Q_USAGE.md`](./AMAZON_Q_USAGE.md)
+
+📓 **Development Journal:** [`HACKATHON_JOURNAL.md`](./HACKATHON_JOURNAL.md)
 
 ---
 
