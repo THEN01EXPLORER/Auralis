@@ -32,6 +32,28 @@ class ErrorBoundary extends React.Component {
       errorInfo: errorInfo
     });
 
+    // Send the error to the backend logging endpoint so we can inspect
+    try {
+      const payload = {
+        error_id: this.state.errorId || `err-${Date.now()}`,
+        message: error?.toString ? error.toString() : String(error),
+        stack: errorInfo?.componentStack || (error && error.stack) || null,
+        url: window.location.href,
+        user_agent: navigator.userAgent
+      };
+
+      // Fire-and-forget reporting
+      fetch((process.env.REACT_APP_API_URL || '') + '/api/v1/log_error', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch((e) => {
+        // swallow
+        if (process.env.NODE_ENV === 'development') console.error('Failed to send error log:', e);
+      });
+    } catch (e) {
+      if (process.env.NODE_ENV === 'development') console.error('ErrorBoundary logging error failed:', e);
+    }
     // You can also log the error to an error reporting service here
     // Example: logErrorToService(error, errorInfo);
   }

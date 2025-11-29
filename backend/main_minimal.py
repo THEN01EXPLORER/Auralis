@@ -13,6 +13,7 @@ import uuid
 import json
 from typing import List, Optional
 from datetime import datetime
+import pathlib
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -575,6 +576,38 @@ def get_supported_patterns():
         "patterns": patterns,
         "categories": ["Security"]
     }
+
+
+# Error logging endpoint - accept client-side error reports
+class ErrorLogRequest(BaseModel):
+    error_id: str
+    message: str
+    stack: Optional[str] = None
+    url: Optional[str] = None
+    user_agent: Optional[str] = None
+
+
+@app.post("/api/v1/log_error")
+def log_client_error(request: ErrorLogRequest):
+    """Receive client-side error reports and append to server log."""
+    try:
+        logs_dir = pathlib.Path("./logs")
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        log_file = logs_dir / "client_errors.log"
+        entry = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "error_id": request.error_id,
+            "message": request.message,
+            "stack": request.stack,
+            "url": request.url,
+            "user_agent": request.user_agent,
+        }
+        with open(log_file, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry) + "\n")
+
+        return {"status": "logged", "error_id": request.error_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to write error log: {str(e)}")
 
 
 @app.post("/api/v1/analyze_repo")
