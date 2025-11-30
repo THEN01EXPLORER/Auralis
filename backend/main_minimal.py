@@ -209,7 +209,7 @@ def analyze_contract(code: str) -> List[dict]:
         for line_num, line in enumerate(lines, 1):
             if pattern.search(line):
                 # Calculate confidence based on pattern specificity
-                confidence = 85 if pattern_info["severity"] in ["Critical", "High"] else 70
+                confidence = 0.85 if pattern_info["severity"] in ["Critical", "High"] else 0.70
                 
                 vulnerabilities.append({
                     "type": pattern_info["name"],
