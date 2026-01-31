@@ -1,0 +1,166 @@
+:root,
+[data-theme="dark"] {
+  /* Premium Dark Palette */
+  --primary-cyan: #00d4ff;
+  --primary-purple: #9d4edd;
+  --accent-blue: #4361ee;
+  --success-green: #06d6a0;
+  --warning-orange: #ffd166;
+  --danger-red: #ef476f;
+  
+  /* Deep, Rich Backgrounds */
+  --bg-dark: #050511;  /* Deeper black-blue */
+  --bg-darker: #02020a;
+  --bg-card: rgba(18, 18, 28, 0.7); /* More transparent */
+  --bg-card-hover: rgba(28, 28, 45, 0.8);
+  --border-color: rgba(255, 255, 255, 0.08); /* Subtler borders */
+  --border-hover: rgba(0, 212, 255, 0.3);
+  
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #c7c7d4;
+  --text-muted: #7a7a9e;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+  --glass-highlight: rgba(255, 255, 255, 0.1);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-neon: 0 0 20px rgba(0, 212, 255, 0.15);
+
+  /* Transitions */
+  --transition-fast: 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-smooth: 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+[data-theme="light"] {
+  /* Premium Light Palette (Clean & Crisp) */
+  --primary-cyan: #0088a3;
+  --primary-purple: #7209b7;
+  --accent-blue: #3f37c9;
+  --success-green: #00a878;
+  --warning-orange: #fca311;
+  --danger-red: #d90429;
+  
+  --bg-dark: #f8f9fc;
+  --bg-darker: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 136, 163, 0.3);
+  
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8d99ae;
+  
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-neon: 0 0 20px rgba(0, 136, 163, 0.1);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import './animations.css';
+@import './accessibility.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  font-feature-settings: "cv03", "cv04", "cv11";
+}
+
+code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-card);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Selection Styling */
+::selection {
+  background: rgba(0, 212, 255, 0.2);
+  color: var(--primary-cyan);
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--primary-cyan);
+  outline-offset: 4px;
+}
+
+/* Utility Classes */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-md);
+}
+
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}

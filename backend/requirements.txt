@@ -1,0 +1,11 @@
+prometheus-fastapi-instrumentator
+sentry-sdk
+pybreaker
+fastapi
+uvicorn[standard]
+pydantic
+mangum
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+structlog

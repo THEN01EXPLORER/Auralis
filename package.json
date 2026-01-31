@@ -1,0 +1,14 @@
+{
+  "name": "auralis",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend",
+    "start": "cd frontend && npm start"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

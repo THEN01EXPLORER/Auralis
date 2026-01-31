@@ -1,0 +1,203 @@
+.analyze-page {
+  padding: var(--spacing-xl);
+}
+
+.analyze-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 1400px) {
+  .analyze-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.repo-scanner-section {
+  background: rgba(0, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.repo-scanner-section:hover {
+  border-color: rgba(0, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+}
+
+.repo-scanner-section h3 {
+  margin: 0 0 var(--spacing-lg) 0;
+  color: var(--primary-cyan);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: var(--spacing-xl) 0;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-divider span {
+  padding: 0 var(--spacing-md);
+}
+
+.repo-input-group {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.repo-url-input {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.repo-url-input:focus {
+  outline: none;
+  border-color: var(--primary-cyan);
+  background: rgba(0, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+}
+
+.repo-url-input::placeholder {
+  color: var(--text-muted);
+}
+
+.analyze-repo-button {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.analyze-repo-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.analyze-repo-button:hover::before {
+  left: 100%;
+}
+
+.analyze-repo-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.4);
+}
+
+.analyze-repo-button:active {
+  transform: translateY(0);
+}
+
+.analyze-repo-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .analyze-page {
+    padding: var(--spacing-lg);
+  }
+
+  .repo-input-group {
+    flex-direction: column;
+  }
+
+  .analyze-repo-button {
+    width: 100%;
+  }
+}
+
+/* ====================================
+   LIGHT MODE STYLES
+   ==================================== */
+
+[data-theme="light"] .repo-scanner-section {
+  background: rgba(8, 145, 178, 0.03);
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .repo-scanner-section:hover {
+  border-color: #0891b2;
+  box-shadow: 0 8px 32px rgba(8, 145, 178, 0.15);
+}
+
+[data-theme="light"] .repo-scanner-section h3 {
+  color: #0891b2;
+}
+
+[data-theme="light"] .section-divider {
+  color: #64748b;
+}
+
+[data-theme="light"] .section-divider::before,
+[data-theme="light"] .section-divider::after {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .repo-url-input {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .repo-url-input:focus {
+  border-color: #0891b2;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(8, 145, 178, 0.15);
+}
+
+[data-theme="light"] .repo-url-input::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .analyze-repo-button {
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  box-shadow: 0 4px 16px rgba(8, 145, 178, 0.3);
+}
+
+[data-theme="light"] .analyze-repo-button:hover {
+  box-shadow: 0 8px 24px rgba(8, 145, 178, 0.4);
+}

@@ -1,0 +1,48 @@
+.risk-meter {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.risk-meter h3 {
+  margin: 0 0 15px 0;
+  color: #fff;
+}
+
+.meter-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meter-bar {
+  width: 100%;
+  height: 30px;
+  background: #333;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  transition: width 0.5s ease, background-color 0.5s ease;
+  border-radius: 15px;
+}
+
+.meter-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meter-score {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.meter-label {
+  font-size: 18px;
+  font-weight: bold;
+}
